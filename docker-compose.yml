@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: cold-chain-tracking-db
+    image: postgres:13.4-alpine
+    environment:
+      POSTGRES_DB: coldchaintracking
+      POSTGRES_USER: coldchaintracking
+      POSTGRES_PASSWORD: coldchaintracking
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - ./src/main/resources/db/setup-extensions.sql:/docker-entrypoint-initdb.d/setup-extensions.sql
+
+  # ad-hoc execution (considering database up and running):
+  # docker run --rm --network=host -v ./src/main/resources/db/migration:/flyway/sql flyway/flyway:9.6.0 -url=jdbc:postgresql://localhost:5432/coldchaintracking -user=coldchaintracking -password=coldchaintracking info -outputType=json
+  flyway:
+    container_name: cold-chain-tracking-flyway
+    image: flyway/flyway:9.6.0
+    command: migrate -outputType=json
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db/coldchaintracking
+      FLYWAY_USER: coldchaintracking
+      FLYWAY_PASSWORD: coldchaintracking
+      FLYWAY_DEFAULT_SCHEMA: public
+      FLYWAY_SCHEMAS: public
+      FLYWAY_CONNECT_RETRIES: 5
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    depends_on:
+      - db

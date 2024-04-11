@@ -1,0 +1,49 @@
+logging:
+  level:
+    org:
+      atmosphere: warn
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DATABASE_NAME:coldchaintracking}
+    username: ${DATABASE_USERNAME:coldchaintracking}
+    password: ${DATABASE_PASSWORD:coldchaintracking}
+  mustache:
+    check-template-location: false
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    default-schema: public
+    schemas: public
+    create-schemas: true
+
+vaadin:
+  allowed-packages: com.vaadin,org.vaadin,dev.hilla,br.ufscar.ppgcc
+  launch-browser: true
+
+kpn:
+  grip:
+    url: https://auth.grip-on-it.com
+    tenant-id:
+    application-id:
+    client-id:
+    client-secret:
+  things:
+    url: https://api.kpnthings.com
+    mqtt:
+      url: tcp://broker.emqx.io:1883
+      topic: coldchaintracking/kpn/${KPN_THINGS_CLIENT_ID}/#
+
+ttn:
+  stack:
+    url: https://eu1.cloud.thethings.network
+    application-id:
+    token:
+    mqtt:
+      url: tcp://eu1.cloud.thethings.network:1883
+      username: ${TTN_STACK_APPLICATION_ID}@${TTN_STACK_TENANT_ID}
+      password:
+      topic: v3/${TTN_STACK_APPLICATION_ID}@${TTN_STACK_TENANT_ID}/devices/#
