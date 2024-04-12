@@ -3,6 +3,7 @@ package br.ufscar.ppgcc.views;
 import br.ufscar.ppgcc.domain.carrier.CarrierListView;
 import br.ufscar.ppgcc.domain.device.DeviceListView;
 import br.ufscar.ppgcc.domain.measurement.MeasurementTypeListView;
+import br.ufscar.ppgcc.domain.route.RouteListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -54,6 +55,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("Devices", DeviceListView.class, LineAwesomeIcon.MICROCHIP_SOLID.create()));
         nav.addItem(new SideNavItem("Measurement Types", MeasurementTypeListView.class, LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create()));
         nav.addItem(new SideNavItem("Carriers", CarrierListView.class, LineAwesomeIcon.DOLLY_SOLID.create()));
+        nav.addItem(new SideNavItem("Routes", RouteListView.class, LineAwesomeIcon.ROUTE_SOLID.create()));
         return nav;
     }
 

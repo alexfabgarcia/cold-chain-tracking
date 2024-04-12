@@ -47,3 +47,7 @@ ttn:
       username: ${TTN_STACK_APPLICATION_ID}@${TTN_STACK_TENANT_ID}
       password:
       topic: v3/${TTN_STACK_APPLICATION_ID}@${TTN_STACK_TENANT_ID}/devices/#
+
+google:
+  geolocation:
+    api-key:

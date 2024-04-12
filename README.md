@@ -16,6 +16,7 @@ Environment variables required to connect to the Network Servers KPN and TTN are
 - TTN_STACK_MQTT_PASSWORD
 - TTN_STACK_TENANT_ID
 - TTN_STACK_TOKEN
+- GOOGLE_GEOLOCATION_API_KEY
 
 ## Running the application
 
