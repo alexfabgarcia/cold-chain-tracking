@@ -19,6 +19,7 @@ CREATE TABLE product
     id         UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     name       VARCHAR     NOT NULL,
     category   VARCHAR     NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (name, category)
 );
@@ -47,6 +48,7 @@ CREATE TABLE device
     network_server  VARCHAR     NOT NULL,
     name            VARCHAR,
     payload_pattern VARCHAR     NOT NULL,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (external_id, network_server)
 );
@@ -87,6 +89,7 @@ CREATE TABLE freight
     destination JSONB       NOT NULL,
     status      VARCHAR     NOT NULL,
     carrier_id  UUID,
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (device_id, product_id, created_at)
 );
@@ -109,9 +112,9 @@ VALUES ('Alex Fabiano', 'Garcia', '+31649923823'),
        ('Wanderley Lopes', 'de Souza', '+5516999999999');
 
 INSERT INTO product (name, category)
-VALUES ('Pfizer–BioNTech COVID-19', 'Vaccine'),
-       ('Oxford–AstraZeneca COVID-19', 'Vaccine'),
-       ('CoronaVac COVID-19', 'Vaccine');
+VALUES ('Pfizer–BioNTech COVID-19', 'VACCINE'),
+       ('Oxford–AstraZeneca COVID-19', 'VACCINE'),
+       ('CoronaVac COVID-19', 'VACCINE');
 
 INSERT INTO product_measurement_type (product_id, measurement_type_id, minimum, maximum)
 VALUES ((SELECT id FROM product WHERE name = 'CoronaVac COVID-19'),

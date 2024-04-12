@@ -1,0 +1,54 @@
+package br.ufscar.ppgcc.domain.product;
+
+import br.ufscar.ppgcc.data.Product;
+import com.vaadin.flow.component.crud.CrudFilter;
+import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.SortDirection;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
+
+import java.util.stream.Stream;
+
+@Component
+class ProductDataProvider extends AbstractBackEndDataProvider<Product, CrudFilter> {
+
+    private final ProductRepository repository;
+
+    ProductDataProvider(ProductRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    protected Stream<Product> fetchFromBackEnd(Query<Product, CrudFilter> query) {
+        return repository.findAll(getPageable(query)).stream();
+    }
+
+    private Pageable getPageable(Query<Product, CrudFilter> query) {
+        return PageRequest.of(query.getPage(), query.getPageSize(), getSort(query));
+    }
+
+    private Sort getSort(Query<Product, CrudFilter> query) {
+        var orders = query.getSortOrders().stream()
+                .map(querySortOrder -> SortDirection.ASCENDING == querySortOrder.getDirection() ? Sort.Order.asc(querySortOrder.getSorted()) : Sort.Order.desc(querySortOrder.getSorted()))
+                .toList();
+        return Sort.by(orders);
+    }
+
+    @Override
+    protected int sizeInBackEnd(Query<Product, CrudFilter> query) {
+        return (int) repository.count(Specification.where(null));
+    }
+
+    public void delete(Product item) {
+        repository.delete(item);
+    }
+
+    public void persist(Product item) {
+        repository.save(item);
+    }
+
+}
