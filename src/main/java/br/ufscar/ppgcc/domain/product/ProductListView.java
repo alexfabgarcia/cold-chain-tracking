@@ -46,7 +46,7 @@ public class ProductListView extends CrudListView<Product, ProductDataProvider> 
         var name = new TextField("Name");
         var category = new Select<Product.Category>();
         category.setLabel("Category");
-        category.setItems(Product.Category.VACCINE);
+        category.setItems(Product.Category.values());
         var sensors = new MultiSelectComboBox<SensorType>("Sensor Type");
         sensors.setItems(dataProvider.sensorTypes());
         sensors.setItemLabelGenerator(SensorType::getName);

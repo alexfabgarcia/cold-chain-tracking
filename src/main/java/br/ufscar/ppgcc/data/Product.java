@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 public class Product {
 
     public enum Category {
-        VACCINE
+        VACCINE,
+        ANTIVENOM
     }
 
     @Id
