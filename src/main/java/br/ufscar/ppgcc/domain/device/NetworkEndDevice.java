@@ -1,6 +1,6 @@
 package br.ufscar.ppgcc.domain.device;
 
-public interface Device {
+public interface NetworkEndDevice {
 
     String id();
 

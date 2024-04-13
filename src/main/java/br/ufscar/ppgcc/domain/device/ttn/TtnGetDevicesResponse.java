@@ -1,14 +1,14 @@
 package br.ufscar.ppgcc.domain.device.ttn;
 
-import br.ufscar.ppgcc.domain.device.Device;
+import br.ufscar.ppgcc.domain.device.NetworkEndDevice;
 import br.ufscar.ppgcc.domain.device.NetworkServer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-record TtnGetDevicesResponse(@JsonProperty("end_devices") List<EndDevice> endDevices) {
+public record TtnGetDevicesResponse(@JsonProperty("end_devices") List<EndDevice> endDevices) {
 
-    record EndDevice(Ids ids, String name) implements Device {
+    public record EndDevice(Ids ids, String name) implements NetworkEndDevice {
 
         @Override
         public String id() {
@@ -20,7 +20,7 @@ record TtnGetDevicesResponse(@JsonProperty("end_devices") List<EndDevice> endDev
             return NetworkServer.TTN;
         }
 
-        record Ids(@JsonProperty("device_id") String id) {}
+        public record Ids(@JsonProperty("device_id") String id) {}
 
     }
 

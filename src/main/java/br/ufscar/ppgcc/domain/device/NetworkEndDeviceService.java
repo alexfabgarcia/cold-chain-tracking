@@ -10,16 +10,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class DeviceService {
+public class NetworkEndDeviceService {
 
-    private final Map<NetworkServer, NetworkProviderService<? extends Device>> managers;
+    private final Map<NetworkServer, NetworkProviderService<? extends NetworkEndDevice>> managers;
 
-    public DeviceService(Collection<NetworkProviderService<? extends Device>> networkProviderServices) {
+    public NetworkEndDeviceService(Collection<NetworkProviderService<? extends NetworkEndDevice>> networkProviderServices) {
         this.managers = networkProviderServices.stream()
                 .collect(Collectors.toMap(NetworkProviderService::name, Function.identity()));
     }
 
-    public List<Device> listDevices() {
+    public List<NetworkEndDevice> listDevices() {
         return managers.values()
                 .stream()
                 .map(NetworkProviderService::name)
@@ -29,7 +29,7 @@ public class DeviceService {
     }
 
     @Cacheable(value = "devices")
-    public <T extends Device> List<T> listDevices(NetworkServer networkServer) {
+    public <T extends NetworkEndDevice> List<T> listDevices(NetworkServer networkServer) {
 
         // FIXME: It must be paged for production purposes
         return (List<T>) managers.get(networkServer).listDevices();
