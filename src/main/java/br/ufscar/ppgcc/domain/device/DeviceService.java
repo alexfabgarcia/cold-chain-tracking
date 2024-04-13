@@ -28,7 +28,7 @@ public class DeviceService {
                 .toList();
     }
 
-    @Cacheable(value = "kpn-devices", key = "networkServer")
+    @Cacheable(value = "devices")
     public <T extends Device> List<T> listDevices(NetworkServer networkServer) {
 
         // FIXME: It must be paged for production purposes

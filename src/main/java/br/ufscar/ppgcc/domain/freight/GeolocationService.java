@@ -1,4 +1,4 @@
-package br.ufscar.ppgcc.domain.route;
+package br.ufscar.ppgcc.domain.freight;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;

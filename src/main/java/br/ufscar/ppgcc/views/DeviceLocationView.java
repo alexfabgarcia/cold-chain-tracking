@@ -5,8 +5,6 @@ import com.vaadin.flow.component.map.configuration.Coordinate;
 import com.vaadin.flow.component.map.configuration.feature.MarkerFeature;
 import com.vaadin.flow.component.map.configuration.style.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

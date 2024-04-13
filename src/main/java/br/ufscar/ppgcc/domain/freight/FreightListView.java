@@ -1,4 +1,4 @@
-package br.ufscar.ppgcc.domain.route;
+package br.ufscar.ppgcc.domain.freight;
 
 import br.ufscar.ppgcc.views.MainLayout;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -19,9 +19,9 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 import static java.util.Objects.nonNull;
 
-@PageTitle("Routes")
-@Route(value = "routes", layout = MainLayout.class)
-public class RouteListView extends VerticalLayout {
+@PageTitle("Freights")
+@Route(value = "freights", layout = MainLayout.class)
+public class FreightListView extends VerticalLayout {
 
     static class MarkerMap extends Map {
 
@@ -124,7 +124,7 @@ public class RouteListView extends VerticalLayout {
 
     }
 
-    public RouteListView(GeolocationService geolocationService) {
+    public FreightListView(GeolocationService geolocationService) {
         var map = new MarkerMap();
         map.setSizeFull();
 
