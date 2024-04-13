@@ -8,15 +8,21 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CrudListView<T> extends VerticalLayout {
+public abstract class CrudListView<T, P extends CrudDataProvider<T>> extends VerticalLayout {
 
     private static final String EDIT_COLUMN = "vaadin-crud-edit-column";
 
-    private final Crud<T> crud;
+    protected final Crud<T> crud;
 
-    public CrudListView(CrudDataProvider<T> dataProvider, Class<T> beanType) {
+    protected CrudListView(P dataProvider, Class<T> beanType) {
+
+        // Create grid before to disable filters
         var grid = new CrudGrid<>(beanType, false);
-        crud = new Crud<>(beanType, grid, createEditor());
+
+        crud = new Crud<>();
+        crud.setBeanType(beanType);
+        crud.setGrid(grid);
+        crud.setEditor(createEditor(dataProvider));
         crud.setSizeFull();
 
         setupDataProvider(dataProvider);
@@ -26,14 +32,20 @@ public abstract class CrudListView<T> extends VerticalLayout {
         setSizeFull();
     }
 
-    protected abstract CrudEditor<T> createEditor();
-
     protected abstract List<String> visibleColumns();
+
+    protected abstract CrudEditor<T> createEditor(P dataProvider);
+
+    protected void preSaveHook(Crud.SaveEvent<T> saveEvent) {
+    }
 
     private void setupDataProvider(CrudDataProvider<T> dataProvider) {
         crud.setDataProvider(dataProvider);
         crud.addDeleteListener(deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
-        crud.addSaveListener(saveEvent -> dataProvider.persist(saveEvent.getItem()));
+        crud.addSaveListener(saveEvent -> {
+            preSaveHook(saveEvent);
+            dataProvider.save(saveEvent.getItem());
+        });
     }
 
     private void setupGrid() {

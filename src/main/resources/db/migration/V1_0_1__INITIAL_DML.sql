@@ -1,4 +1,4 @@
-INSERT INTO measurement_type (name, unit)
+INSERT INTO sensor_type (name, unit)
 VALUES ('Temperature', 'DEGREE_CELSIUS'),
        ('Humidity', 'RELATIVE_HUMIDITY'),
        ('Location', 'LATITUDE_LONGITUDE');
@@ -11,6 +11,6 @@ VALUES ('Pfizer–BioNTech COVID-19', 'VACCINE'),
        ('Oxford–AstraZeneca COVID-19', 'VACCINE'),
        ('CoronaVac COVID-19', 'VACCINE');
 
-INSERT INTO product_measurement_type (product_id, measurement_type_id, minimum, maximum)
+INSERT INTO product_sensor_type (product_id, sensor_type_id, minimum, maximum)
 VALUES ((SELECT id FROM product WHERE name = 'CoronaVac COVID-19'),
-        (SELECT id FROM measurement_type WHERE name = 'Temperature'), 2, 8);
+        (SELECT id FROM sensor_type WHERE name = 'Temperature'), 2, 8);

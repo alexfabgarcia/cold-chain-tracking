@@ -41,7 +41,7 @@ public class CrudDataProvider<T> extends AbstractBackEndDataProvider<T, CrudFilt
         return (int) repository.count(Specification.where(null));
     }
 
-    public void persist(T item) {
+    public void save(T item) {
         repository.save(item);
     }
 

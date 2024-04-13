@@ -1,19 +1,19 @@
-package br.ufscar.ppgcc.domain.measurement;
+package br.ufscar.ppgcc.domain.sensor;
 
-import br.ufscar.ppgcc.data.MeasurementType;
+import br.ufscar.ppgcc.data.SensorType;
 import br.ufscar.ppgcc.views.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Measurement Types")
-@Route(value = "measurement-types", layout = MainLayout.class)
-public class MeasurementTypeListView extends VerticalLayout {
+@PageTitle("Sensor Types")
+@Route(value = "sensor-types", layout = MainLayout.class)
+public class SensorTypeListView extends VerticalLayout {
 
-    public MeasurementTypeListView(MeasurementTypeRepository repository) {
-        final var grid = new Grid<>(MeasurementType.class);
-        grid.addClassNames("measurement-types-grid");
+    public SensorTypeListView(SensorTypeRepository repository) {
+        final var grid = new Grid<>(SensorType.class);
+        grid.addClassNames("sensor-types-grid");
         grid.setColumns("name", "measurementUnit");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.setItems(repository.findAllByOrderByName());

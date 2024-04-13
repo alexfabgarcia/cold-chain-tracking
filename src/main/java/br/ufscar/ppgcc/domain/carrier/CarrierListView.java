@@ -1,6 +1,5 @@
 package br.ufscar.ppgcc.domain.carrier;
 
-import br.ufscar.ppgcc.common.CrudDataProvider;
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.data.Carrier;
 import br.ufscar.ppgcc.views.MainLayout;
@@ -16,14 +15,19 @@ import java.util.List;
 
 @PageTitle("Carriers")
 @Route(value = "carriers", layout = MainLayout.class)
-public class CarrierListView extends CrudListView<Carrier> {
+public class CarrierListView extends CrudListView<Carrier, CarrierDataProvider> {
 
-    public CarrierListView(CrudDataProvider<Carrier> dataProvider) {
+    public CarrierListView(CarrierDataProvider dataProvider) {
         super(dataProvider, Carrier.class);
     }
 
     @Override
-    protected CrudEditor<Carrier> createEditor() {
+    protected List<String> visibleColumns() {
+        return List.of("firstName", "surname", "phone");
+    }
+
+    @Override
+    protected CrudEditor<Carrier> createEditor(CarrierDataProvider dataProvider) {
         var firstName = new TextField("First name");
         var surname = new TextField("Surname");
         var phone = new TextField("Phone");
@@ -36,10 +40,5 @@ public class CarrierListView extends CrudListView<Carrier> {
         var form = new FormLayout(firstName, surname, phone);
 
         return new BinderCrudEditor<>(binder, form);
-    }
-
-    @Override
-    protected List<String> visibleColumns() {
-        return List.of("firstName", "surname", "phone");
     }
 }

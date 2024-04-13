@@ -18,8 +18,8 @@ public class DeviceMeasurement {
     private String deviceId;
 
     @ManyToOne
-    @JoinColumn(name = "measurement_type_id", nullable = false)
-    private MeasurementType measurementType;
+    @JoinColumn(name = "sensor_type_id", nullable = false)
+    private SensorType sensorType;
 
     @Column(name = "measured_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime measuredAt;
@@ -33,9 +33,9 @@ public class DeviceMeasurement {
     protected DeviceMeasurement() {
     }
 
-    public DeviceMeasurement(String deviceId, MeasurementType measurementType, ZonedDateTime measuredAt, String value) {
+    public DeviceMeasurement(String deviceId, SensorType sensorType, ZonedDateTime measuredAt, String value) {
         this.deviceId = deviceId;
-        this.measurementType = measurementType;
+        this.sensorType = sensorType;
         this.measuredAt = measuredAt;
         this.value = value;
     }

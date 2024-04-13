@@ -21,6 +21,7 @@ spring:
     create-schemas: true
   jpa:
     show-sql: true
+    open-in-view: false
 
 vaadin:
   allowed-packages: com.vaadin,org.vaadin,dev.hilla,br.ufscar.ppgcc

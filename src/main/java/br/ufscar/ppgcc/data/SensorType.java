@@ -7,8 +7,8 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "measurement_type")
-public class MeasurementType {
+@Table(name = "sensor_type")
+public class SensorType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
