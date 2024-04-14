@@ -2,6 +2,7 @@ package br.ufscar.ppgcc.domain.geolocation;
 
 import com.vaadin.flow.component.map.Map;
 import com.vaadin.flow.component.map.configuration.Coordinate;
+import com.vaadin.flow.component.map.configuration.Feature;
 import com.vaadin.flow.component.map.configuration.feature.MarkerFeature;
 import com.vaadin.flow.component.map.configuration.feature.PointBasedFeature;
 
@@ -11,6 +12,19 @@ import static java.lang.Math.toRadians;
 public class MarkerMap extends Map {
 
     private static final double EARTH_RADIUS_KM = 6371;
+    private static final double SINGLE_POINT_ZOOM = 12;
+
+    public MarkerMap() {
+        addFeatureClickListener(event -> {
+            if (event.getFeature() instanceof GeolocationMarkerFeature gmf) {
+                gmf.toggleText();
+            }
+        });
+    }
+
+    public void attach(Feature markerFeature) {
+        getFeatureLayer().addFeature(markerFeature);
+    }
 
     public void zoomAndCenter() {
         var coordinates = getFeatureLayer().getFeatures().stream()
@@ -24,20 +38,19 @@ public class MarkerMap extends Map {
 
             if (coordinates.size() == 1) {
                 setCenter(first);
-                setZoom(12);
+                setZoom(SINGLE_POINT_ZOOM);
             } else {
 
-                // Simplistic solution, I know
+                // Simplistic solution
                 var minX = coordinates.stream().mapToDouble(Coordinate::getX).min().orElse(0);
                 var minY = coordinates.stream().mapToDouble(Coordinate::getY).min().orElse(0);
                 var maxX = coordinates.stream().mapToDouble(Coordinate::getX).max().orElse(0);
                 var maxY = coordinates.stream().mapToDouble(Coordinate::getY).max().orElse(0);
+                setZoom(zoomFrom(minX, minY, maxX, maxY));
 
                 var centerX = (maxX + minX) / 2;
                 var centerY = (maxY + minY) / 2;
-
                 setCenter(new Coordinate(centerX, centerY));
-                setZoom(zoomFrom(minX, minY, maxX, maxY));
             }
         }
     }

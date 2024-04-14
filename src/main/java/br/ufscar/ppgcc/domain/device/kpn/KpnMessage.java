@@ -19,7 +19,7 @@ public class KpnMessage {
 
     public record KpnPayload(String value, ZonedDateTime time) {}
 
-    public record KpnLocation(Number latitude, Number longitude, String method, ZonedDateTime time) {}
+    public record KpnLocation(Double latitude, Double longitude, String method, ZonedDateTime time) {}
 
     public String getDeviceId() {
         return deviceId;
@@ -32,16 +32,17 @@ public class KpnMessage {
 
     public Optional<KpnLocation> getLocation() {
         return findMeasurement("locOrigin")
-                .map(senML -> new KpnLocation(getNumber("latitude"), getNumber("longitude"), getLocationMethod(), senML.getBaseTime()));
+                .map(senML -> new KpnLocation(getDouble("latitude"), getDouble("longitude"), getLocationMethod(), senML.getBaseTime()));
     }
 
     private Optional<KpnSenML> findMeasurement(String name) {
         return Optional.ofNullable(sensorMeasurementMap.get(name));
     }
 
-    private Number getNumber(String name) {
+    private Double getDouble(String name) {
         return findMeasurement(name)
                 .map(KpnSenML::v)
+                .map(Number::doubleValue)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid measurement name: " + name));
     }
 

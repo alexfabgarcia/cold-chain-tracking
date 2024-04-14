@@ -1,6 +1,6 @@
 INSERT INTO measurement_type (name, unit)
 VALUES ('Temperature', 'DEGREE_CELSIUS'),
-       ('Humidity', 'RELATIVE_HUMIDITY'),
+       ('Humidity', 'PERCENTAGE'),
        ('Location', 'LATITUDE_LONGITUDE');
 
 INSERT INTO carrier (first_name, surname, phone)

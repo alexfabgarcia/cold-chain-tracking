@@ -1,6 +1,7 @@
 package br.ufscar.ppgcc.domain.device.ttn;
 
 import br.ufscar.ppgcc.domain.device.DeviceMeasurementService;
+import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.event.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +54,8 @@ public class TtnMessageHandler implements MessageHandler {
         try {
             var uplinkMessage = objectMapper.readValue(message.getPayload().toString(), TtnUplinkMessage.class);
             LOGGER.info("Handling uplink message of {}.", uplinkMessage.deviceId());
-            deviceMeasurementService.saveTemperature(uplinkMessage.deviceId(), uplinkMessage.decodedPayload(), uplinkMessage.receivedAt());
+            deviceMeasurementService.savePayload(uplinkMessage.deviceId(), NetworkServer.TTN,
+                    uplinkMessage.decodedPayload(), uplinkMessage.receivedAt());
         } catch (JsonProcessingException e) {
             throw new MessageHandlingException(message, e);
         }

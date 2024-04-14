@@ -55,6 +55,10 @@ public class Freight {
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime createdAt;
 
+    public UUID getId() {
+        return id;
+    }
+
     public Product getProduct() {
         return product;
     }

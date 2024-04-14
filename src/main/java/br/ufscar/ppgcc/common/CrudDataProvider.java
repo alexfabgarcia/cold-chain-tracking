@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public class CrudDataProvider<T> extends AbstractBackEndDataProvider<T, CrudFilter> {
@@ -47,6 +49,10 @@ public class CrudDataProvider<T> extends AbstractBackEndDataProvider<T, CrudFilt
 
     public void delete(T item) {
         repository.delete(item);
+    }
+
+    public Optional<T> findById(UUID id) {
+        return repository.findById(id);
     }
 
 }

@@ -10,6 +10,7 @@ CREATE TABLE measurement_type
     id         UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     name       VARCHAR     NOT NULL,
     unit       VARCHAR     NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (name)
 );
@@ -26,12 +27,13 @@ CREATE TABLE product
 
 CREATE TABLE product_measurement_type
 (
-    id             UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
-    product_id     UUID        NOT NULL REFERENCES product,
+    id                  UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
+    product_id          UUID        NOT NULL REFERENCES product,
     measurement_type_id UUID        NOT NULL REFERENCES measurement_type,
-    minimum        DECIMAL     NOT NULL,
-    maximum        DECIMAL     NOT NULL,
-    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    minimum             DECIMAL     NOT NULL,
+    maximum             DECIMAL     NOT NULL,
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (product_id, measurement_type_id)
 );
 
@@ -41,7 +43,7 @@ CREATE TABLE device
     external_id     VARCHAR     NOT NULL,
     network_server  VARCHAR     NOT NULL,
     name            VARCHAR,
-    payload_pattern VARCHAR     NOT NULL,
+    payload_pattern VARCHAR,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (external_id, network_server)
@@ -49,12 +51,12 @@ CREATE TABLE device
 
 CREATE TABLE device_measurement
 (
-    id             UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
-    device_id      VARCHAR     NOT NULL,
-    measurement_type_id UUID        NOT NULL REFERENCES measurement_type,
-    measured_at    TIMESTAMPTZ NOT NULL,
-    value          VARCHAR     NOT NULL,
-    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id                  UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
+    device_id           UUID        NOT NULL REFERENCES device,
+    measurement_type_id UUID REFERENCES measurement_type,
+    measured_at         TIMESTAMPTZ NOT NULL,
+    value               VARCHAR     NOT NULL,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (device_id, measurement_type_id, measured_at)
 );
 

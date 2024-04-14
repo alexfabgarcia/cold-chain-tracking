@@ -1,32 +1,86 @@
 package br.ufscar.ppgcc.domain.device;
 
+import br.ufscar.ppgcc.data.Device;
 import br.ufscar.ppgcc.data.DeviceMeasurement;
+import br.ufscar.ppgcc.data.GeolocationPoint;
+import br.ufscar.ppgcc.data.MeasurementType;
 import br.ufscar.ppgcc.domain.measurement.MeasurementTypeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class DeviceMeasurementService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMeasurementService.class);
+
     private final DeviceMeasurementRepository deviceMeasurementRepository;
     private final MeasurementTypeRepository measurementTypeRepository;
+    private final DeviceRepository deviceRepository;
+    private final ObjectMapper objectMapper;
 
     public DeviceMeasurementService(DeviceMeasurementRepository deviceMeasurementRepository,
-                                    MeasurementTypeRepository measurementTypeRepository) {
+                                    MeasurementTypeRepository measurementTypeRepository,
+                                    DeviceRepository deviceRepository, ObjectMapper objectMapper) {
         this.deviceMeasurementRepository = deviceMeasurementRepository;
         this.measurementTypeRepository = measurementTypeRepository;
+        this.deviceRepository = deviceRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public void saveTemperature(String deviceId, String measurement, ZonedDateTime moment) {
+    public void savePayload(String deviceExternalId, NetworkServer networkServer, String measurement,
+                            ZonedDateTime moment) {
+        var device = getDevice(deviceExternalId, networkServer);
+        // TODO treat payload format
         var temperature = measurementTypeRepository.findByName("Temperature");
-        var deviceMeasurement = new DeviceMeasurement(deviceId, temperature, moment, measurement);
+        var deviceMeasurement = new DeviceMeasurement(device, temperature, moment, measurement);
         deviceMeasurementRepository.save(deviceMeasurement);
     }
 
-    public void saveLocation(String deviceId, String data, ZonedDateTime time) {
-        var location = measurementTypeRepository.findByName("Location");
-        var deviceMeasurement = new DeviceMeasurement(deviceId, location, time, data);
+    private Device getDevice(String deviceExternalId, NetworkServer networkServer) {
+        return deviceRepository.findByExternalIdAndNetworkServer(deviceExternalId, networkServer)
+                .orElseGet(() -> deviceRepository.save(new Device(deviceExternalId, networkServer)));
+    }
+
+    public void saveLocation(String deviceExternalId, NetworkServer networkServer, GeolocationPoint geolocationPoint,
+                             ZonedDateTime time) {
+        var device = getDevice(deviceExternalId, networkServer);
+        var deviceMeasurement = new DeviceMeasurement(device, locationMeasurement(), time, writeJsonSafely(geolocationPoint));
         deviceMeasurementRepository.save(deviceMeasurement);
+    }
+
+    private String writeJsonSafely(Object payload) {
+        try {
+            return objectMapper.writeValueAsString(payload);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("An error occurred while writing JSON.", e);
+            return payload.toString();
+        }
+    }
+
+    private MeasurementType locationMeasurement() {
+        return measurementTypeRepository.findByName("Location");
+    }
+
+    public Map<ZonedDateTime, GeolocationPoint> getDeviceLocations(Device device, ZonedDateTime start, ZonedDateTime end) {
+        return deviceMeasurementRepository.findByDeviceAndMeasurementTypeAndMeasuredAtBetweenOrderByMeasuredAtDesc(
+                device, locationMeasurement(), start, end)
+                .stream()
+                .collect(toMap(DeviceMeasurement::getMeasuredAt, this::readGeolocationPoint));
+    }
+
+    private GeolocationPoint readGeolocationPoint(DeviceMeasurement deviceMeasurement) {
+        try {
+            return objectMapper.readValue(deviceMeasurement.getValue(), GeolocationPoint.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

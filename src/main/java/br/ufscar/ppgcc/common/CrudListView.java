@@ -56,7 +56,7 @@ public abstract class CrudListView<T, P extends CrudDataProvider<T>> extends Ver
         crud.addDeleteListener(deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
     }
 
-    private void setupGrid() {
+    protected void setupGrid() {
         var grid = crud.getGrid();
         grid.addItemDoubleClickListener(event -> crud.edit(event.getItem(), Crud.EditMode.EXISTING_ITEM));
 

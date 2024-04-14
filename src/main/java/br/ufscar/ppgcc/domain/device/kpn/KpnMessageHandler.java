@@ -1,6 +1,8 @@
 package br.ufscar.ppgcc.domain.device.kpn;
 
+import br.ufscar.ppgcc.data.GeolocationPoint;
 import br.ufscar.ppgcc.domain.device.DeviceMeasurementService;
+import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.event.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,9 +46,11 @@ public class KpnMessageHandler implements MessageHandler {
         var deviceId = getDeviceId(message);
         var kpnMessage = new KpnMessage(senMLList, deviceId);
         kpnMessage.getPayload().ifPresent(
-                payload -> deviceMeasurementService.saveTemperature(deviceId, payload.value(), payload.time()));
-        kpnMessage.getLocation().ifPresent(
-                location -> deviceMeasurementService.saveLocation(deviceId, writeJsonSafely(location), location.time()));
+                payload -> deviceMeasurementService.savePayload(deviceId, NetworkServer.KPN, payload.value(), payload.time()));
+        kpnMessage.getLocation().ifPresent(location -> {
+            var geolocation = new GeolocationPoint(location.latitude(), location.longitude());
+            deviceMeasurementService.saveLocation(deviceId, NetworkServer.KPN, geolocation, location.time());
+        });
         LOGGER.info("Message was successfully processed for device {}", deviceId);
     }
 
@@ -63,15 +67,6 @@ public class KpnMessageHandler implements MessageHandler {
                 .orElseThrow(() -> new MessageHandlingException(message, "Invalid topic name."));
         var topicComponents = topicName.split("/");
         return topicComponents[topicComponents.length - 1];
-    }
-
-    private String writeJsonSafely(Object payload) {
-        try {
-            return objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
-            LOGGER.error("An error occurred while writing JSON.", e);
-            return payload.toString();
-        }
     }
 
 }

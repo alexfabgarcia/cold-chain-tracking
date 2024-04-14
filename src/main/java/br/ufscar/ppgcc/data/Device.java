@@ -39,6 +39,14 @@ public class Device {
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime createdAt;
 
+    public Device() {
+    }
+
+    public Device(String externalId, NetworkServer networkServer) {
+        this.externalId = externalId;
+        this.networkServer = networkServer;
+    }
+
     public String getExternalId() {
         return externalId;
     }

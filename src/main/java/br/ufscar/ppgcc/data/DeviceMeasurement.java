@@ -14,8 +14,9 @@ public class DeviceMeasurement {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "device_id")
-    private String deviceId;
+    @ManyToOne
+    @JoinColumn(name = "device_id", nullable = false)
+    private Device device;
 
     @ManyToOne
     @JoinColumn(name = "measurement_type_id", nullable = false)
@@ -33,11 +34,19 @@ public class DeviceMeasurement {
     protected DeviceMeasurement() {
     }
 
-    public DeviceMeasurement(String deviceId, MeasurementType measurementType, ZonedDateTime measuredAt, String value) {
-        this.deviceId = deviceId;
+    public DeviceMeasurement(Device device, MeasurementType measurementType, ZonedDateTime measuredAt, String value) {
+        this.device = device;
         this.measurementType = measurementType;
         this.measuredAt = measuredAt;
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public ZonedDateTime getMeasuredAt() {
+        return measuredAt;
     }
 
 }

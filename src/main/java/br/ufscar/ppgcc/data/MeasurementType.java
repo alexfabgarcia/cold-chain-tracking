@@ -19,6 +19,10 @@ public class MeasurementType {
     @Enumerated(EnumType.STRING)
     private MeasurementUnit unit;
 
+    @Version
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime updatedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime createdAt;

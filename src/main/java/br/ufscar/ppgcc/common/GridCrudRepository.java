@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @NoRepositoryBean
@@ -17,6 +18,8 @@ public interface GridCrudRepository<T> extends Repository<T, UUID> {
 
     void delete(T item);
 
-    void save(T item);
+    T save(T item);
+
+    Optional<T> findById(UUID id);
 
 }
