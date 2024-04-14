@@ -1,7 +1,6 @@
 package br.ufscar.ppgcc.domain.device;
 
 import br.ufscar.ppgcc.common.CrudDataProvider;
-import br.ufscar.ppgcc.common.GridCrudRepository;
 import br.ufscar.ppgcc.data.Device;
 import br.ufscar.ppgcc.data.SensorType;
 import br.ufscar.ppgcc.domain.sensor.SensorTypeRepository;
@@ -12,12 +11,14 @@ import java.util.List;
 @Component
 class DeviceDataProvider extends CrudDataProvider<Device> {
 
+    private final DeviceRepository repository;
     private final NetworkEndDeviceService networkEndDeviceService;
     private final SensorTypeRepository sensorTypeRepository;
 
-    public DeviceDataProvider(GridCrudRepository<Device> repository, NetworkEndDeviceService networkEndDeviceService,
+    public DeviceDataProvider(DeviceRepository repository, NetworkEndDeviceService networkEndDeviceService,
                               SensorTypeRepository sensorTypeRepository) {
         super(repository);
+        this.repository = repository;
         this.networkEndDeviceService = networkEndDeviceService;
         this.sensorTypeRepository = sensorTypeRepository;
     }
@@ -38,4 +39,7 @@ class DeviceDataProvider extends CrudDataProvider<Device> {
         return sensorTypeRepository.findAllByOrderByName();
     }
 
+    public List<Device> search(String searchText) {
+        return repository.findTop10ByNameContainingIgnoreCase(searchText);
+    }
 }

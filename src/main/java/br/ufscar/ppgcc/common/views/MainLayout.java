@@ -1,4 +1,4 @@
-package br.ufscar.ppgcc.views;
+package br.ufscar.ppgcc.common.views;
 
 import br.ufscar.ppgcc.domain.carrier.CarrierListView;
 import br.ufscar.ppgcc.domain.device.DeviceListView;

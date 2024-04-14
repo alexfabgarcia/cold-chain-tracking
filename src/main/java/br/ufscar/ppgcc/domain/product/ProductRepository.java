@@ -6,10 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 
+import java.util.List;
+
 interface ProductRepository extends GridCrudRepository<Product> {
 
     @Override
     @EntityGraph("Product.sensorTypes")
     Slice<Product> findAll(Pageable pageable);
+
+    List<Product> findTop10ByNameContainingIgnoreCase(String name);
 
 }

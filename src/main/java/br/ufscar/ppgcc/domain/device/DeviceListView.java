@@ -2,11 +2,10 @@ package br.ufscar.ppgcc.domain.device;
 
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.data.Device;
-import br.ufscar.ppgcc.data.ProductSensorType;
 import br.ufscar.ppgcc.data.SensorType;
 import br.ufscar.ppgcc.domain.device.kpn.KpnGetDevicesResponse;
 import br.ufscar.ppgcc.domain.device.ttn.TtnGetDevicesResponse;
-import br.ufscar.ppgcc.views.MainLayout;
+import br.ufscar.ppgcc.common.views.MainLayout;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.crud.CrudEditor;
@@ -24,7 +23,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 

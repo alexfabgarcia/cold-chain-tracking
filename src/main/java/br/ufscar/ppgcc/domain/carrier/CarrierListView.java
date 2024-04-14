@@ -2,7 +2,7 @@ package br.ufscar.ppgcc.domain.carrier;
 
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.data.Carrier;
-import br.ufscar.ppgcc.views.MainLayout;
+import br.ufscar.ppgcc.common.views.MainLayout;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.formlayout.FormLayout;

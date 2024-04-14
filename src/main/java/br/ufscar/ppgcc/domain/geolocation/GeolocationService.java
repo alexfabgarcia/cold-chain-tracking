@@ -1,5 +1,6 @@
-package br.ufscar.ppgcc.domain.freight;
+package br.ufscar.ppgcc.domain.geolocation;
 
+import br.ufscar.ppgcc.data.GeolocationPoint;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import org.springframework.cache.annotation.Cacheable;
@@ -9,11 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-class GeolocationService {
+public class GeolocationService {
 
     private final GeoApiContext geoApiContext;
 
-    GeolocationService(GeoApiContext geoApiContext) {
+    public GeolocationService(GeoApiContext geoApiContext) {
         this.geoApiContext = geoApiContext;
     }
 

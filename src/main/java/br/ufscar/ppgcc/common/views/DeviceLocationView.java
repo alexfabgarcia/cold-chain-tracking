@@ -1,4 +1,4 @@
-package br.ufscar.ppgcc.views;
+package br.ufscar.ppgcc.common.views;
 
 import com.vaadin.flow.component.map.Map;
 import com.vaadin.flow.component.map.configuration.Coordinate;

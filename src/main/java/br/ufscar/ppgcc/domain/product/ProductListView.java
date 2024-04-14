@@ -1,13 +1,13 @@
 package br.ufscar.ppgcc.domain.product;
 
+import br.ufscar.ppgcc.common.CrudDataProvider;
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.data.Product;
 import br.ufscar.ppgcc.data.ProductSensorType;
 import br.ufscar.ppgcc.data.SensorType;
-import br.ufscar.ppgcc.views.MainLayout;
+import br.ufscar.ppgcc.common.views.MainLayout;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
-import com.vaadin.flow.component.crud.Crud;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.gridpro.GridPro;
@@ -37,6 +37,14 @@ public class ProductListView extends CrudListView<Product, ProductDataProvider> 
     @Override
     protected List<String> visibleColumns() {
         return List.of("name", "category");
+    }
+
+    @Override
+    protected void setupSaveListener(CrudDataProvider<Product> dataProvider) {
+        crud.addSaveListener(saveEvent -> {
+            saveEvent.getItem().setSensorTypes(sensorGrid.getListDataView().getItems().collect(Collectors.toSet()));
+            dataProvider.save(saveEvent.getItem());
+        });
     }
 
     @Override
@@ -91,8 +99,4 @@ public class ProductListView extends CrudListView<Product, ProductDataProvider> 
         return sensorGrid;
     }
 
-    @Override
-    protected void preSaveHook(Crud.SaveEvent<Product> saveEvent) {
-        saveEvent.getItem().setSensorTypes(sensorGrid.getListDataView().getItems().collect(Collectors.toSet()));
-    }
 }

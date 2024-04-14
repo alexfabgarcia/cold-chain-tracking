@@ -12,14 +12,24 @@ public abstract class CrudListView<T, P extends CrudDataProvider<T>> extends Ver
 
     private static final String EDIT_COLUMN = "vaadin-crud-edit-column";
 
-    protected final Crud<T> crud;
+    protected final Crud<T> crud = new Crud<>();
+
+    protected CrudListView() {
+    }
 
     protected CrudListView(P dataProvider, Class<T> beanType) {
+        initCrud(dataProvider, beanType);
+    }
+
+    protected abstract List<String> visibleColumns();
+
+    protected abstract CrudEditor<T> createEditor(P dataProvider);
+
+    protected void initCrud(P dataProvider, Class<T> beanType) {
 
         // Create grid before to disable filters
         var grid = new CrudGrid<>(beanType, false);
 
-        crud = new Crud<>();
         crud.setBeanType(beanType);
         crud.setGrid(grid);
         crud.setEditor(createEditor(dataProvider));
@@ -32,20 +42,18 @@ public abstract class CrudListView<T, P extends CrudDataProvider<T>> extends Ver
         setSizeFull();
     }
 
-    protected abstract List<String> visibleColumns();
-
-    protected abstract CrudEditor<T> createEditor(P dataProvider);
-
-    protected void preSaveHook(Crud.SaveEvent<T> saveEvent) {
-    }
-
     private void setupDataProvider(CrudDataProvider<T> dataProvider) {
         crud.setDataProvider(dataProvider);
+        setupSaveListener(dataProvider);
+        setupDeleteListener(dataProvider);
+    }
+
+    protected void setupSaveListener(CrudDataProvider<T> dataProvider) {
+        crud.addSaveListener(saveEvent -> dataProvider.save(saveEvent.getItem()));
+    }
+
+    protected void setupDeleteListener(CrudDataProvider<T> dataProvider) {
         crud.addDeleteListener(deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
-        crud.addSaveListener(saveEvent -> {
-            preSaveHook(saveEvent);
-            dataProvider.save(saveEvent.getItem());
-        });
     }
 
     private void setupGrid() {

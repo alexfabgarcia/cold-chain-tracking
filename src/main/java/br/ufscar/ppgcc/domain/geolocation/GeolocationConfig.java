@@ -1,4 +1,4 @@
-package br.ufscar.ppgcc.domain.freight;
+package br.ufscar.ppgcc.domain.geolocation;
 
 import com.google.maps.GeoApiContext;
 import org.springframework.beans.factory.annotation.Value;

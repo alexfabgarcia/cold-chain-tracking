@@ -1,7 +1,7 @@
 package br.ufscar.ppgcc.domain.sensor;
 
 import br.ufscar.ppgcc.data.SensorType;
-import br.ufscar.ppgcc.views.MainLayout;
+import br.ufscar.ppgcc.common.views.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
