@@ -1,7 +1,7 @@
 package br.ufscar.ppgcc.domain.device;
 
 import br.ufscar.ppgcc.data.DeviceMeasurement;
-import br.ufscar.ppgcc.domain.sensor.SensorTypeRepository;
+import br.ufscar.ppgcc.domain.measurement.MeasurementTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -10,22 +10,22 @@ import java.time.ZonedDateTime;
 public class DeviceMeasurementService {
 
     private final DeviceMeasurementRepository deviceMeasurementRepository;
-    private final SensorTypeRepository sensorTypeRepository;
+    private final MeasurementTypeRepository measurementTypeRepository;
 
     public DeviceMeasurementService(DeviceMeasurementRepository deviceMeasurementRepository,
-                                    SensorTypeRepository sensorTypeRepository) {
+                                    MeasurementTypeRepository measurementTypeRepository) {
         this.deviceMeasurementRepository = deviceMeasurementRepository;
-        this.sensorTypeRepository = sensorTypeRepository;
+        this.measurementTypeRepository = measurementTypeRepository;
     }
 
     public void saveTemperature(String deviceId, String measurement, ZonedDateTime moment) {
-        var temperature = sensorTypeRepository.findByName("Temperature");
+        var temperature = measurementTypeRepository.findByName("Temperature");
         var deviceMeasurement = new DeviceMeasurement(deviceId, temperature, moment, measurement);
         deviceMeasurementRepository.save(deviceMeasurement);
     }
 
     public void saveLocation(String deviceId, String data, ZonedDateTime time) {
-        var location = sensorTypeRepository.findByName("Location");
+        var location = measurementTypeRepository.findByName("Location");
         var deviceMeasurement = new DeviceMeasurement(deviceId, location, time, data);
         deviceMeasurementRepository.save(deviceMeasurement);
     }

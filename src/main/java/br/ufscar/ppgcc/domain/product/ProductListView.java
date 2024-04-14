@@ -2,11 +2,10 @@ package br.ufscar.ppgcc.domain.product;
 
 import br.ufscar.ppgcc.common.CrudDataProvider;
 import br.ufscar.ppgcc.common.CrudListView;
-import br.ufscar.ppgcc.data.Product;
-import br.ufscar.ppgcc.data.ProductSensorType;
-import br.ufscar.ppgcc.data.SensorType;
 import br.ufscar.ppgcc.common.views.MainLayout;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import br.ufscar.ppgcc.data.Product;
+import br.ufscar.ppgcc.data.ProductMeasurementType;
+import br.ufscar.ppgcc.domain.measurement.MeasurementTypeMultiSelect;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -28,10 +27,12 @@ import static java.util.stream.Collectors.toMap;
 @Route(value = "products", layout = MainLayout.class)
 public class ProductListView extends CrudListView<Product, ProductDataProvider> {
 
-    private GridPro<ProductSensorType> sensorGrid;
+    private final MeasurementTypeMultiSelect measurementMultiSelect;
+    private GridPro<ProductMeasurementType> measurementTypeGrid;
 
-    public ProductListView(ProductDataProvider dataProvider) {
-        super(dataProvider, Product.class);
+    public ProductListView(ProductDataProvider dataProvider, MeasurementTypeMultiSelect measurementMultiSelect) {
+        this.measurementMultiSelect = measurementMultiSelect;
+        initCrud(dataProvider, Product.class);
     }
 
     @Override
@@ -42,31 +43,29 @@ public class ProductListView extends CrudListView<Product, ProductDataProvider> 
     @Override
     protected void setupSaveListener(CrudDataProvider<Product> dataProvider) {
         crud.addSaveListener(saveEvent -> {
-            saveEvent.getItem().setSensorTypes(sensorGrid.getListDataView().getItems().collect(Collectors.toSet()));
+            saveEvent.getItem().setMeasurementTypes(measurementTypeGrid.getListDataView().getItems().collect(Collectors.toSet()));
             dataProvider.save(saveEvent.getItem());
         });
     }
 
     @Override
     protected CrudEditor<Product> createEditor(ProductDataProvider dataProvider) {
-        sensorGrid = createSensorGrid();
+        measurementTypeGrid = createMeasurementGrid();
 
         var name = new TextField("Name");
         var category = new Select<Product.Category>();
         category.setLabel("Category");
         category.setItems(Product.Category.values());
-        var sensors = new MultiSelectComboBox<SensorType>("Sensor Type");
-        sensors.setItems(dataProvider.sensorTypes());
-        sensors.setItemLabelGenerator(SensorType::getName);
-        sensors.addValueChangeListener(event -> {
-            var productSensorMap = sensorGrid.getListDataView().getItems()
-                    .collect(toMap(ProductSensorType::getSensorType, Function.identity()));
 
-            var productSensorTypes = event.getValue().stream()
-                    .map(sensorType -> productSensorMap.getOrDefault(sensorType, new ProductSensorType(sensorType)))
+        measurementMultiSelect.addValueChangeListener(event -> {
+            var productMeeasurementMap = measurementTypeGrid.getListDataView().getItems()
+                    .collect(toMap(ProductMeasurementType::getMeasurementType, Function.identity()));
+
+            var productMeasurementTypes = event.getValue().stream()
+                    .map(measurementType -> productMeeasurementMap.getOrDefault(measurementType, new ProductMeasurementType(measurementType)))
                     .toList();
 
-            sensorGrid.setItems(productSensorTypes);
+            measurementTypeGrid.setItems(productMeasurementTypes);
         });
 
         var binder = new Binder<>(Product.class);
@@ -75,28 +74,28 @@ public class ProductListView extends CrudListView<Product, ProductDataProvider> 
 
         crud.addEditListener(event -> {
             var product = event.getItem();
-            var sensorTypes = product.getSensorTypes();
-            sensors.setValue(sensorTypes.stream()
-                    .map(ProductSensorType::getSensorType).collect(Collectors.toSet()));
-            sensorGrid.setItems(sensorTypes);
+            var measurementTypes = product.getMeasurementTypes();
+            measurementMultiSelect.setValue(measurementTypes.stream()
+                    .map(ProductMeasurementType::getMeasurementType).collect(Collectors.toSet()));
+            measurementTypeGrid.setItems(measurementTypes);
         });
 
-        var form = new FormLayout(name, category, sensors, sensorGrid);
+        var form = new FormLayout(name, category, measurementMultiSelect, measurementTypeGrid);
         form.setResponsiveSteps(new FormLayout.ResponsiveStep(LumoUtility.MinWidth.NONE, 1),
                 new FormLayout.ResponsiveStep(LumoUtility.MaxWidth.SCREEN_MEDIUM, 2));
-        form.setColspan(sensors, 2);
-        form.setColspan(sensorGrid, 2);
+        form.setColspan(measurementMultiSelect, 2);
+        form.setColspan(measurementTypeGrid, 2);
 
         return new BinderCrudEditor<>(binder, form);
     }
 
-    private GridPro<ProductSensorType> createSensorGrid() {
-        sensorGrid = new GridPro<>();
-        sensorGrid.setAllRowsVisible(true);
-        sensorGrid.addColumn(ProductSensorType::getSensorTypeWithUnit).setHeader("Sensor Type");
-        sensorGrid.addEditColumn(ProductSensorType::getMinimum).text(ProductSensorType::setMinimumSafely).setHeader("Minimum");
-        sensorGrid.addEditColumn(ProductSensorType::getMaximum).text(ProductSensorType::setMaximumSafely).setHeader("Maximum");
-        return sensorGrid;
+    private GridPro<ProductMeasurementType> createMeasurementGrid() {
+        measurementTypeGrid = new GridPro<>();
+        measurementTypeGrid.setAllRowsVisible(true);
+        measurementTypeGrid.addColumn(ProductMeasurementType::getMeasurementTypeWithUnit).setHeader("Measurement Type");
+        measurementTypeGrid.addEditColumn(ProductMeasurementType::getMinimum).text(ProductMeasurementType::setMinimumSafely).setHeader("Minimum");
+        measurementTypeGrid.addEditColumn(ProductMeasurementType::getMaximum).text(ProductMeasurementType::setMaximumSafely).setHeader("Maximum");
+        return measurementTypeGrid;
     }
 
 }

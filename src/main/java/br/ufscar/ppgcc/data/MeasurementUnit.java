@@ -3,7 +3,7 @@ package br.ufscar.ppgcc.data;
 public enum MeasurementUnit {
 
     DEGREE_CELSIUS("°C"),
-    RELATIVE_HUMIDITY("RH (%)"),
+    PERCENTAGE("%"),
     LATITUDE_LONGITUDE("Latitude, Longitude"),
     ;
 
@@ -16,4 +16,5 @@ public enum MeasurementUnit {
     public String getDescription() {
         return description;
     }
+
 }

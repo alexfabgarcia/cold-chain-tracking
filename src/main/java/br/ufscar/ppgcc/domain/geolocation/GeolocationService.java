@@ -20,7 +20,6 @@ public class GeolocationService {
 
     @Cacheable("location-search-cache")
     public List<GeolocationPoint> find(String searchText) {
-        System.out.println(searchText);
         var response = GeocodingApi.geocode(geoApiContext, searchText).awaitIgnoreError();
         return Arrays.stream(response)
                 .map(result -> {

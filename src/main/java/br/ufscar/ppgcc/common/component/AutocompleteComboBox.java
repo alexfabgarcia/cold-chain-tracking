@@ -10,13 +10,13 @@ import static java.util.Objects.nonNull;
 public abstract class AutocompleteComboBox<T> extends ComboBox<T> {
 
     protected AutocompleteComboBox(Function<String, List<T>> searchFunction) {
-        setHelperText("Type at least 5 characters and press enter");
+        setHelperText(String.format("Type at least %d characters and press enter", getMinCharacters()));
         setClearButtonVisible(true);
         setAllowCustomValue(true);
         setManualValidation(true);
         addCustomValueSetListener(input -> {
             var customValue = input.getDetail();
-            if (nonNull(customValue) && customValue.length() > 4) {
+            if (nonNull(customValue) && customValue.length() >= getMinCharacters()) {
                 setItems(searchFunction.apply(customValue));
                 setInvalid(false);
                 setOpened(true);
@@ -34,4 +34,9 @@ public abstract class AutocompleteComboBox<T> extends ComboBox<T> {
         }
         super.setValue(value);
     }
+
+    protected int getMinCharacters() {
+        return 5;
+    }
+
 }

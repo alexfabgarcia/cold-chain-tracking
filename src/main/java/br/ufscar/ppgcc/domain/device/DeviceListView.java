@@ -2,11 +2,11 @@ package br.ufscar.ppgcc.domain.device;
 
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.data.Device;
-import br.ufscar.ppgcc.data.SensorType;
+import br.ufscar.ppgcc.data.MeasurementType;
 import br.ufscar.ppgcc.domain.device.kpn.KpnGetDevicesResponse;
 import br.ufscar.ppgcc.domain.device.ttn.TtnGetDevicesResponse;
 import br.ufscar.ppgcc.common.views.MainLayout;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import br.ufscar.ppgcc.domain.measurement.MeasurementTypeMultiSelect;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -15,7 +15,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +27,13 @@ import static java.util.stream.Collectors.toMap;
 
 @PageTitle("Devices")
 @Route(value = "devices", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
 public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
 
-    public DeviceListView(DeviceDataProvider dataProvider) {
-        super(dataProvider, Device.class);
+    private final MeasurementTypeMultiSelect measurementMultiSelect;
+
+    public DeviceListView(DeviceDataProvider dataProvider, MeasurementTypeMultiSelect measurementMultiSelect) {
+        this.measurementMultiSelect = measurementMultiSelect;
+        initCrud(dataProvider, Device.class);
     }
 
     @Override
@@ -61,14 +62,11 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         });
 
         var payloadPattern = new TextField("Payload format");
-        payloadPattern.setHelperText("Select the sensors and edit the expected payload");
+        payloadPattern.setHelperText("Select the measurement and edit the expected payload");
 
-        var sensors = new MultiSelectComboBox<SensorType>("Sensor Type");
-        sensors.setItems(dataProvider.sensorTypes());
-        sensors.setItemLabelGenerator(SensorType::getName);
-        sensors.addValueChangeListener(event -> {
+        measurementMultiSelect.addValueChangeListener(event -> {
             var format = event.getValue().stream()
-                    .map(sensorType -> String.format("{%s}", sensorType.getName()))
+                    .map(measurementType -> String.format("{%s}", measurementType.getName()))
                     .collect(Collectors.joining());
             payloadPattern.setValue(format);
         });
@@ -76,8 +74,9 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         var binder = new Binder<>(Device.class);
         binder.forField(networkServerSelect).bind(Device::getNetworkServer, Device::setNetworkServer);
         binder.forField(deviceSelect).asRequired().bind(this::toNetworkEndDevice, Device::setFrom);
-        binder.forField(sensors).bind(device -> Optional.ofNullable(device.getPayloadPattern()).map(text -> {
-            var types = sensors.getListDataView().getItems().collect(toMap(SensorType::getName, Function.identity()));
+        binder.forField(measurementMultiSelect).bind(device -> Optional.ofNullable(device.getPayloadPattern()).map(text -> {
+            var types = measurementMultiSelect.getListDataView()
+                    .getItems().collect(toMap(MeasurementType::getName, Function.identity()));
             Pattern pattern = Pattern.compile("\\{([^}]*)\\}");
             Matcher matcher = pattern.matcher(text);
             return matcher.results().map(result -> result.group(1))
@@ -86,7 +85,7 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         }).orElse(null), (foo,bar) -> {});
         binder.forField(payloadPattern).asRequired().bind(Device::getPayloadPattern, Device::setPayloadPattern);
 
-        var form = new FormLayout(networkServerSelect, deviceSelect, sensors, payloadPattern);
+        var form = new FormLayout(networkServerSelect, deviceSelect, measurementMultiSelect, payloadPattern);
 
         return new BinderCrudEditor<>(binder, form);
     }

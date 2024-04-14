@@ -9,8 +9,8 @@ import java.util.UUID;
 import static java.util.Objects.nonNull;
 
 @Entity
-@Table(name = "product_sensor_type")
-public class ProductSensorType {
+@Table(name = "product_measurement_type")
+public class ProductMeasurementType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,26 +21,26 @@ public class ProductSensorType {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name="sensor_type_id", nullable=false)
-    private SensorType sensorType;
+    @JoinColumn(name="measurement_type_id", nullable=false)
+    private MeasurementType measurementType;
 
     private Double minimum;
 
     private Double maximum;
 
-    protected ProductSensorType() {
+    protected ProductMeasurementType() {
     }
 
-    public ProductSensorType(SensorType sensorType) {
-        this.sensorType = sensorType;
+    public ProductMeasurementType(MeasurementType measurementType) {
+        this.measurementType = measurementType;
     }
 
     public void setProduct(Product product) {
         this.product = product;
     }
 
-    public SensorType getSensorType() {
-        return sensorType;
+    public MeasurementType getMeasurementType() {
+        return measurementType;
     }
 
     public Double getMinimum() {
@@ -67,26 +67,26 @@ public class ProductSensorType {
         }
     }
 
-    public String getSensorTypeWithUnit() {
-        return Optional.of(sensorType)
+    public String getMeasurementTypeWithUnit() {
+        return Optional.of(measurementType)
                 .map(type -> String.format("%s (%s)", type.getName(), type.getMeasurementUnit())).orElse("");
     }
 
     public boolean isValid() {
-        return nonNull(product) && nonNull(sensorType) && nonNull(minimum) && nonNull(maximum);
+        return nonNull(product) && nonNull(measurementType) && nonNull(minimum) && nonNull(maximum);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductSensorType that = (ProductSensorType) o;
-        return Objects.equals(product, that.product) && Objects.equals(sensorType, that.sensorType);
+        ProductMeasurementType that = (ProductMeasurementType) o;
+        return Objects.equals(product, that.product) && Objects.equals(measurementType, that.measurementType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(product, sensorType);
+        return Objects.hash(product, measurementType);
     }
 
 }

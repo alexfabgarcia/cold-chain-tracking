@@ -11,7 +11,7 @@ import java.util.List;
 interface ProductRepository extends GridCrudRepository<Product> {
 
     @Override
-    @EntityGraph("Product.sensorTypes")
+    @EntityGraph("Product.measurementTypes")
     Slice<Product> findAll(Pageable pageable);
 
     List<Product> findTop10ByNameContainingIgnoreCase(String name);

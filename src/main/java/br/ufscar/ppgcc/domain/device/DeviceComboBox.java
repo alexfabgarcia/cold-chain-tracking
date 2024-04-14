@@ -14,4 +14,10 @@ public class DeviceComboBox extends AutocompleteComboBox<Device> {
         super.setLabel("Device");
         setItemLabelGenerator(Device::getName);
     }
+
+    @Override
+    protected int getMinCharacters() {
+        return 2;
+    }
+
 }

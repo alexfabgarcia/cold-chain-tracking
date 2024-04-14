@@ -14,4 +14,9 @@ public class ProductComboBox extends AutocompleteComboBox<Product> {
         super.setLabel("Product");
         setItemLabelGenerator(Product::getName);
     }
+
+    @Override
+    protected int getMinCharacters() {
+        return 3;
+    }
 }

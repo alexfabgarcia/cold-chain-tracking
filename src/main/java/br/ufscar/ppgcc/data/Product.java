@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "product")
 @NamedEntityGraph(
-        name = "Product.sensorTypes",
-        attributeNodes = @NamedAttributeNode(value = "sensorTypes", subgraph = "ProductSensorType.sensorType"),
+        name = "Product.measurementTypes",
+        attributeNodes = @NamedAttributeNode(value = "measurementTypes", subgraph = "ProductMeasurementType.measurementType"),
         subgraphs = @NamedSubgraph(
-                name = "ProductSensorType.sensorType",
-                attributeNodes = @NamedAttributeNode(value = "sensorType")
+                name = "ProductMeasurementType.measurementType",
+                attributeNodes = @NamedAttributeNode(value = "measurementType")
         )
 )
 public class Product {
@@ -46,7 +46,7 @@ public class Product {
     private ZonedDateTime createdAt;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductSensorType> sensorTypes = new HashSet<>();
+    private Set<ProductMeasurementType> measurementTypes = new HashSet<>();
 
     public String getName() {
         return name;
@@ -64,17 +64,17 @@ public class Product {
         this.category = category;
     }
 
-    public Set<ProductSensorType> getSensorTypes() {
-        return sensorTypes;
+    public Set<ProductMeasurementType> getMeasurementTypes() {
+        return measurementTypes;
     }
 
-    public void setSensorTypes(Set<ProductSensorType> newSensorTypes) {
-        var existingSensorsMap = this.sensorTypes.stream()
+    public void setMeasurementTypes(Set<ProductMeasurementType> newMeasurementTypes) {
+        var existingMeasurementMap = this.measurementTypes.stream()
                 .collect(Collectors.toMap(Function.identity(), Function.identity()));
-        this.sensorTypes = newSensorTypes.stream()
+        this.measurementTypes = newMeasurementTypes.stream()
                 .peek(a -> a.setProduct(this))
-                .filter(ProductSensorType::isValid)
-                .map(sensorType -> existingSensorsMap.merge(sensorType, sensorType, (oldValue, value) -> {
+                .filter(ProductMeasurementType::isValid)
+                .map(measurementType -> existingMeasurementMap.merge(measurementType, measurementType, (oldValue, value) -> {
                     oldValue.setMinimumSafely(value.getMinimum().toString());
                     oldValue.setMaximumSafely(value.getMaximum().toString());
                     return oldValue;

@@ -2,7 +2,7 @@ package br.ufscar.ppgcc.common.views;
 
 import br.ufscar.ppgcc.domain.carrier.CarrierListView;
 import br.ufscar.ppgcc.domain.device.DeviceListView;
-import br.ufscar.ppgcc.domain.sensor.SensorTypeListView;
+import br.ufscar.ppgcc.domain.measurement.MeasurementTypeListView;
 import br.ufscar.ppgcc.domain.product.ProductListView;
 import br.ufscar.ppgcc.domain.freight.FreightListView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -53,11 +53,11 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
+        nav.addItem(new SideNavItem("Freights", FreightListView.class, LineAwesomeIcon.ROUTE_SOLID.create()));
+        nav.addItem(new SideNavItem("Measurement Types", MeasurementTypeListView.class, LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create()));
         nav.addItem(new SideNavItem("Devices", DeviceListView.class, LineAwesomeIcon.MICROCHIP_SOLID.create()));
-        nav.addItem(new SideNavItem("Sensor Types", SensorTypeListView.class, LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create()));
         nav.addItem(new SideNavItem("Products", ProductListView.class, LineAwesomeIcon.BOX_SOLID.create()));
         nav.addItem(new SideNavItem("Carriers", CarrierListView.class, LineAwesomeIcon.HARD_HAT_SOLID.create()));
-        nav.addItem(new SideNavItem("Freights", FreightListView.class, LineAwesomeIcon.ROUTE_SOLID.create()));
         return nav;
     }
 

@@ -7,8 +7,8 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "sensor_type")
-public class SensorType {
+@Table(name = "measurement_type")
+public class MeasurementType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +25,18 @@ public class SensorType {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MeasurementUnit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(MeasurementUnit unit) {
+        this.unit = unit;
     }
 
     public String getMeasurementUnit() {

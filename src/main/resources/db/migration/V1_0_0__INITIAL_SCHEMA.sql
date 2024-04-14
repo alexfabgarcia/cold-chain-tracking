@@ -5,7 +5,7 @@ CREATE TABLE raw_event
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE sensor_type
+CREATE TABLE measurement_type
 (
     id         UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     name       VARCHAR     NOT NULL,
@@ -24,15 +24,15 @@ CREATE TABLE product
     UNIQUE (name, category)
 );
 
-CREATE TABLE product_sensor_type
+CREATE TABLE product_measurement_type
 (
     id             UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     product_id     UUID        NOT NULL REFERENCES product,
-    sensor_type_id UUID        NOT NULL REFERENCES sensor_type,
+    measurement_type_id UUID        NOT NULL REFERENCES measurement_type,
     minimum        DECIMAL     NOT NULL,
     maximum        DECIMAL     NOT NULL,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (product_id, sensor_type_id)
+    UNIQUE (product_id, measurement_type_id)
 );
 
 CREATE TABLE device
@@ -51,11 +51,11 @@ CREATE TABLE device_measurement
 (
     id             UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     device_id      VARCHAR     NOT NULL,
-    sensor_type_id UUID        NOT NULL REFERENCES sensor_type,
+    measurement_type_id UUID        NOT NULL REFERENCES measurement_type,
     measured_at    TIMESTAMPTZ NOT NULL,
     value          VARCHAR     NOT NULL,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (device_id, sensor_type_id, measured_at)
+    UNIQUE (device_id, measurement_type_id, measured_at)
 );
 
 CREATE INDEX device_measurement_measured_at_index ON device_measurement (created_at);
