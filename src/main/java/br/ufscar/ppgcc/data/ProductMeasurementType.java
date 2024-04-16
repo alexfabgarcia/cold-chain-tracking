@@ -12,6 +12,10 @@ import static java.util.Objects.nonNull;
 
 @Entity
 @Table(name = "product_measurement_type")
+@NamedEntityGraph(name = "ProductMeasurementType.eager", attributeNodes = {
+        @NamedAttributeNode("product"),
+        @NamedAttributeNode("measurementType")
+})
 public class ProductMeasurementType {
 
     @Id
@@ -43,6 +47,10 @@ public class ProductMeasurementType {
 
     public ProductMeasurementType(MeasurementType measurementType) {
         this.measurementType = measurementType;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 
     public void setProduct(Product product) {

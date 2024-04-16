@@ -8,6 +8,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "device_measurement")
+@NamedEntityGraph(name = "DeviceMeasurement.eager", attributeNodes = {
+        @NamedAttributeNode("device"), @NamedAttributeNode("measurementType")
+})
 public class DeviceMeasurement {
 
     @Id
@@ -41,6 +44,10 @@ public class DeviceMeasurement {
         this.value = value;
     }
 
+    public MeasurementType getMeasurementType() {
+        return measurementType;
+    }
+
     public String getValue() {
         return value;
     }
@@ -48,5 +55,4 @@ public class DeviceMeasurement {
     public ZonedDateTime getMeasuredAt() {
         return measuredAt;
     }
-
 }

@@ -3,6 +3,7 @@ package br.ufscar.ppgcc.domain.freight;
 import br.ufscar.ppgcc.common.CrudListView;
 import br.ufscar.ppgcc.common.views.MainLayout;
 import br.ufscar.ppgcc.data.Freight;
+import br.ufscar.ppgcc.domain.geolocation.OriginDestinationMap;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
@@ -26,6 +27,7 @@ public class FreightListView extends CrudListView<Freight, FreightDataProvider> 
 
     protected FreightListView(FreightDataProvider dataProvider, FreightFormLayout formLayout) {
         this.formLayout = formLayout;
+        this.formLayout.add();
         initCrud(dataProvider, Freight.class);
     }
 
@@ -41,6 +43,11 @@ public class FreightListView extends CrudListView<Freight, FreightDataProvider> 
         binder.forField(formLayout.getDeviceComboBox()).asRequired().bind(Freight::getDevice, Freight::setDevice);
         binder.forField(formLayout.getOriginComboBox()).asRequired().bind(Freight::getOrigin, Freight::setOrigin);
         binder.forField(formLayout.getDestinationComboBox()).asRequired().bind(Freight::getDestination, Freight::setDestination);
+
+        var map = new OriginDestinationMap(formLayout.getOriginComboBox(), formLayout.getDestinationComboBox());
+        formLayout.setReadOnly(false);
+        formLayout.add(map);
+        formLayout.setColspan(map, 2);
 
         return new BinderCrudEditor<>(binder, formLayout);
     }

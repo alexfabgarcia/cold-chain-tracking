@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -69,7 +71,13 @@ public class DeviceMeasurementService {
         return measurementTypeRepository.findByName("Location");
     }
 
-    public Map<ZonedDateTime, GeolocationPoint> getDeviceLocations(Device device, ZonedDateTime start, ZonedDateTime end) {
+    public Map<MeasurementType, List<DeviceMeasurement>> getSensorMeasurements(Device device, ZonedDateTime start, ZonedDateTime end) {
+        return deviceMeasurementRepository.findByDeviceAndMeasurementTypeIsNotAndMeasuredAtBetweenOrderByMeasuredAtDesc(
+                device, locationMeasurement(), start, end).stream()
+                .collect(groupingBy(DeviceMeasurement::getMeasurementType));
+    }
+
+    public Map<ZonedDateTime, GeolocationPoint> getLocations(Device device, ZonedDateTime start, ZonedDateTime end) {
         return deviceMeasurementRepository.findByDeviceAndMeasurementTypeAndMeasuredAtBetweenOrderByMeasuredAtDesc(
                 device, locationMeasurement(), start, end)
                 .stream()
