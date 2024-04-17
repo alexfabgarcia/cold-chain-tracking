@@ -43,13 +43,13 @@ public class KpnMessageHandler implements MessageHandler {
         eventService.saveRawContentAsJson(message);
 
         var senMLList = readSensorMeasurementList(message);
+        var kpnMessage = new KpnMessage(senMLList);
         var deviceId = getDeviceId(message);
-        var kpnMessage = new KpnMessage(senMLList, deviceId);
         kpnMessage.getPayload().ifPresent(
-                payload -> deviceMeasurementService.savePayload(deviceId, NetworkServer.KPN, payload.value(), payload.time()));
+                payload -> deviceMeasurementService.savePayload(deviceId, NetworkServer.KPN, kpnMessage.getDeviceEUI(), payload.value(), payload.time()));
         kpnMessage.getLocation().ifPresent(location -> {
             var geolocation = new GeolocationPoint(location.latitude(), location.longitude());
-            deviceMeasurementService.saveLocation(deviceId, NetworkServer.KPN, geolocation, location.time());
+            deviceMeasurementService.saveLocation(deviceId, NetworkServer.KPN, kpnMessage.getDeviceEUI(), geolocation, location.time());
         });
         LOGGER.info("Message was successfully processed for device {}", deviceId);
     }

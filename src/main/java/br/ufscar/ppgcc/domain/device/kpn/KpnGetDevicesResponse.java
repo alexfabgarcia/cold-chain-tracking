@@ -7,10 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public record KpnGetDevicesResponse(List<KpnDevice> content) {
-    public record KpnDevice(@JsonProperty("uuid") String id, String name) implements NetworkEndDevice {
+
+    public record KpnDevice(@JsonProperty("uuid") String id, String name, String eui) implements NetworkEndDevice {
+
         @Override
         public NetworkServer networkServer() {
             return NetworkServer.KPN;
         }
+
     }
+
 }

@@ -20,7 +20,12 @@ public record TtnGetDevicesResponse(@JsonProperty("end_devices") List<EndDevice>
             return NetworkServer.TTN;
         }
 
-        public record Ids(@JsonProperty("device_id") String id) {}
+        @Override
+        public String eui() {
+            return ids().eui();
+        }
+
+        public record Ids(@JsonProperty("device_id") String id, @JsonProperty("dev_eui") String eui) {}
 
     }
 

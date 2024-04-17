@@ -14,6 +14,14 @@ import java.util.UUID;
 @NamedEntityGraph(name = "Freight.details", attributeNodes = {
         @NamedAttributeNode("product"), @NamedAttributeNode("device"), @NamedAttributeNode("carrier")
 })
+@NamedEntityGraph(
+        name = "Freight.productMeasurements",
+        attributeNodes = @NamedAttributeNode(value = "product", subgraph = "Product.measurements"),
+        subgraphs = @NamedSubgraph(
+                name = "Product.measurements",
+                attributeNodes = @NamedAttributeNode(value = "measurementTypes")
+        )
+)
 public class Freight {
 
     public enum Status {

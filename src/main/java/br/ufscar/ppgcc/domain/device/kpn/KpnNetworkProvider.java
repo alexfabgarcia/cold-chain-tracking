@@ -1,7 +1,8 @@
 package br.ufscar.ppgcc.domain.device.kpn;
 
-import br.ufscar.ppgcc.domain.device.NetworkServer;
+import br.ufscar.ppgcc.data.ConditionViolatedEvent;
 import br.ufscar.ppgcc.domain.device.NetworkProviderService;
+import br.ufscar.ppgcc.domain.device.NetworkServer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +27,19 @@ class KpnNetworkProvider implements NetworkProviderService<KpnGetDevicesResponse
 
     @Override
     public List<KpnGetDevicesResponse.KpnDevice> listDevices() {
-        var tokenResponse = kpnGripClient.getToken(kpnTokenRequest);
-        var devicesResponse = kpnThingsClient.listDevices(String.format("Bearer %s", tokenResponse.token()));
+        var devicesResponse = kpnThingsClient.listDevices(getBearerToken());
         return devicesResponse.content();
+    }
+
+    private String getBearerToken() {
+        var tokenResponse = kpnGripClient.getToken(kpnTokenRequest);
+        return String.format("Bearer %s", tokenResponse.token());
+    }
+
+    @Override
+    public void notifyViolation(ConditionViolatedEvent event) {
+        var payloadHex = KpnSenML.payloadFrom(event.getDevice().getEui(), event.getConditionsHex());
+        kpnThingsClient.sendInstruction(getBearerToken(), List.of(payloadHex));
     }
 
 }

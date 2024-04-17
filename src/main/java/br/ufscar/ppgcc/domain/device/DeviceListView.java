@@ -67,7 +67,7 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         measurementMultiSelect.addValueChangeListener(event -> {
             var format = event.getValue().stream()
                     .map(measurementType -> String.format("{%s}", measurementType.getName()))
-                    .collect(Collectors.joining());
+                    .collect(Collectors.joining("/"));
             payloadPattern.setValue(format);
         });
 
@@ -94,9 +94,10 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
     private NetworkEndDevice toNetworkEndDevice(Device device) {
         if (device != null) {
             if (device.getNetworkServer() == NetworkServer.TTN) {
-                return new TtnGetDevicesResponse.EndDevice(new TtnGetDevicesResponse.EndDevice.Ids(device.getExternalId()), device.getName());
+                var endDeviceIds = new TtnGetDevicesResponse.EndDevice.Ids(device.getExternalId(), device.getEui());
+                return new TtnGetDevicesResponse.EndDevice(endDeviceIds, device.getName());
             }
-            return new KpnGetDevicesResponse.KpnDevice(device.getExternalId(), device.getName());
+            return new KpnGetDevicesResponse.KpnDevice(device.getExternalId(), device.getName(), device.getEui());
         }
         return null;
     }

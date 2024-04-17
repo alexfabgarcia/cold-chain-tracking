@@ -54,7 +54,7 @@ public class TtnMessageHandler implements MessageHandler {
         try {
             var uplinkMessage = objectMapper.readValue(message.getPayload().toString(), TtnUplinkMessage.class);
             LOGGER.info("Handling uplink message of {}.", uplinkMessage.deviceId());
-            deviceMeasurementService.savePayload(uplinkMessage.deviceId(), NetworkServer.TTN,
+            deviceMeasurementService.savePayload(uplinkMessage.deviceId(), NetworkServer.TTN, uplinkMessage.deviceEui(),
                     uplinkMessage.decodedPayload(), uplinkMessage.receivedAt());
         } catch (JsonProcessingException e) {
             throw new MessageHandlingException(message, e);

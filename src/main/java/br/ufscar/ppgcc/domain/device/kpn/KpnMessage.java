@@ -3,26 +3,36 @@ package br.ufscar.ppgcc.domain.device.kpn;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class KpnMessage {
 
-    private final Map<String, KpnSenML> sensorMeasurementMap;
-    private final String deviceId;
+    private static final Pattern URN_PATTERN = Pattern.compile("urn:dev:DEVEUI:(\\w+):");
 
-    public KpnMessage(List<KpnSenML> senMLList, String deviceId) {
+    private final Map<String, KpnSenML> sensorMeasurementMap;
+
+    public KpnMessage(List<KpnSenML> senMLList) {
         this.sensorMeasurementMap = senMLList.stream().collect(Collectors.toMap(KpnSenML::n, Function.identity()));
-        this.deviceId = deviceId;
     }
 
     public record KpnPayload(String value, ZonedDateTime time) {}
 
     public record KpnLocation(Double latitude, Double longitude, String method, ZonedDateTime time) {}
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceEUI() {
+        return sensorMeasurementMap.values().stream()
+                .map(KpnSenML::bn)
+                .filter(Objects::nonNull)
+                .map(URN_PATTERN::matcher)
+                .filter(Matcher::find)
+                .map(matcher -> matcher.group(1))
+                .findAny()
+                .orElse(null);
     }
 
     public Optional<KpnPayload> getPayload() {

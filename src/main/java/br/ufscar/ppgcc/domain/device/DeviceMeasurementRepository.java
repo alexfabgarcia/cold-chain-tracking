@@ -14,6 +14,8 @@ public interface DeviceMeasurementRepository extends Repository<DeviceMeasuremen
 
     void save(DeviceMeasurement deviceMeasurement);
 
+    void saveAll(Iterable<DeviceMeasurement> deviceMeasurement);
+
     @EntityGraph("DeviceMeasurement.eager")
     List<DeviceMeasurement> findByDeviceAndMeasurementTypeAndMeasuredAtBetweenOrderByMeasuredAtDesc(
             Device device, MeasurementType measurementType, ZonedDateTime start, ZonedDateTime end);

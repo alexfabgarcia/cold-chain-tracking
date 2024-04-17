@@ -37,11 +37,19 @@ public class DeviceMeasurement {
     protected DeviceMeasurement() {
     }
 
+    public DeviceMeasurement(Device device, ZonedDateTime measuredAt, String value) {
+        this(device, null, measuredAt, value);
+    }
+
     public DeviceMeasurement(Device device, MeasurementType measurementType, ZonedDateTime measuredAt, String value) {
         this.device = device;
         this.measurementType = measurementType;
         this.measuredAt = measuredAt;
         this.value = value;
+    }
+
+    public Device getDevice() {
+        return device;
     }
 
     public MeasurementType getMeasurementType() {
@@ -55,4 +63,5 @@ public class DeviceMeasurement {
     public ZonedDateTime getMeasuredAt() {
         return measuredAt;
     }
+
 }

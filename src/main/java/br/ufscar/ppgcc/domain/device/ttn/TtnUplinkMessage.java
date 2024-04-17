@@ -11,11 +11,15 @@ public record TtnUplinkMessage(@JsonProperty("end_device_ids") EndDevicesIds end
                                @JsonProperty("uplink_message") UplinkMessage uplinkMessage,
                                @JsonProperty("received_at") ZonedDateTime receivedAt) {
 
-    public record EndDevicesIds(@JsonProperty("device_id") String deviceId) {}
+    public record EndDevicesIds(@JsonProperty("device_id") String deviceId, @JsonProperty("dev_eui") String deviceEui) {}
     public record UplinkMessage(@JsonProperty("frm_payload") String base64Payload) {}
 
     public String deviceId() {
         return endDevicesIds().deviceId();
+    }
+
+    public String deviceEui() {
+        return endDevicesIds().deviceEui();
     }
 
     public String decodedPayload() {

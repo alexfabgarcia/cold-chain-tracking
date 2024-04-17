@@ -42,6 +42,7 @@ public class GeolocationMarkerFeature extends MarkerFeature {
         if (duration.toDaysPart() == 0) {
             return duration.toHours() + " hour(s) ago";
         }
-        return duration.toHours() + " day(s) ago";
+        return duration.toDays() + " day(s) ago";
     }
+
 }

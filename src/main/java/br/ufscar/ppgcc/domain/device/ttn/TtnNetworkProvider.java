@@ -1,5 +1,6 @@
 package br.ufscar.ppgcc.domain.device.ttn;
 
+import br.ufscar.ppgcc.data.ConditionViolatedEvent;
 import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.device.NetworkProviderService;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,11 @@ class TtnNetworkProvider implements NetworkProviderService<TtnGetDevicesResponse
     public List<TtnGetDevicesResponse.EndDevice> listDevices() {
         var response = ttnClient.listDevices(String.format("Bearer %s", ttnToken));
         return response.endDevices();
+    }
+
+    @Override
+    public void notifyViolation(ConditionViolatedEvent event) {
+        // TODO ttn downlink
     }
 
 }

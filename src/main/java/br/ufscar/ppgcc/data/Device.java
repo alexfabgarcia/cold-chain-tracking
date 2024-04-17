@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import static java.util.Objects.nonNull;
@@ -25,6 +26,8 @@ public class Device {
     @Enumerated(EnumType.STRING)
     @Column(name = "network_server")
     private NetworkServer networkServer;
+
+    private String eui;
 
     private String name;
 
@@ -49,6 +52,14 @@ public class Device {
 
     public String getExternalId() {
         return externalId;
+    }
+
+    public String getEui() {
+        return eui;
+    }
+
+    public void setEui(String eui) {
+        this.eui = eui;
     }
 
     public String getName() {
@@ -76,6 +87,7 @@ public class Device {
             externalId = networkEndDevice.id();
             name = networkEndDevice.name();
             networkServer = networkEndDevice.networkServer();
+            eui = networkEndDevice.eui();
         } else {
             externalId = null;
             name = null;
@@ -94,5 +106,14 @@ public class Device {
     @Override
     public int hashCode() {
         return Objects.hash(externalId, networkServer, name);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Device.class.getSimpleName() + "[", "]")
+                .add("externalId='" + externalId + "'")
+                .add("networkServer=" + networkServer)
+                .add("name='" + name + "'")
+                .toString();
     }
 }

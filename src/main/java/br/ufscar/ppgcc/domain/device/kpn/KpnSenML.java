@@ -1,5 +1,7 @@
 package br.ufscar.ppgcc.domain.device.kpn;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -29,12 +31,19 @@ import java.util.HexFormat;
 public record KpnSenML(String bn, Number bt, String bu, Number bv, Number bver, String n, String u, Number v, String vs,
                        Boolean vb, String vd, Number s, Number t, Number ut) {
 
+    @JsonIgnore
     public String getStringFromHexValue() {
         return new String(HexFormat.of().parseHex(vs()));
     }
 
+    @JsonIgnore
     public ZonedDateTime getBaseTime() {
         return ZonedDateTime.ofInstant(Instant.ofEpochSecond(bt.longValue()), ZoneId.systemDefault());
+    }
+
+    static KpnSenML payloadFrom(String eui, String payloadHex) {
+        return new KpnSenML(String.format("urn:dev:DEVEUI:%s:", eui), null, null, null, null,
+                "payloadHex", null, null, payloadHex, null, null, null, null, null);
     }
 
 }

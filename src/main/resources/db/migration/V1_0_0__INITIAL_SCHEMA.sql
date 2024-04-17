@@ -42,12 +42,15 @@ CREATE TABLE device
     id              UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     external_id     VARCHAR     NOT NULL,
     network_server  VARCHAR     NOT NULL,
+    eui             VARCHAR,
     name            VARCHAR,
     payload_pattern VARCHAR,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (external_id, network_server)
 );
+
+CREATE INDEX device_eui_index ON device (eui);
 
 CREATE TABLE device_measurement
 (
