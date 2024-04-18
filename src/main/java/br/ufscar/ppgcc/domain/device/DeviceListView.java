@@ -32,9 +32,12 @@ import static java.util.stream.Collectors.toMap;
 public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
 
     private final MeasurementTypeMultiSelect measurementMultiSelect;
+    private final NetworkEndDeviceDataProvider networkEndDeviceDataProvider;
 
-    public DeviceListView(DeviceDataProvider dataProvider, MeasurementTypeMultiSelect measurementMultiSelect) {
+    public DeviceListView(DeviceDataProvider dataProvider, MeasurementTypeMultiSelect measurementMultiSelect,
+                          NetworkEndDeviceDataProvider networkEndDeviceDataProvider) {
         this.measurementMultiSelect = measurementMultiSelect;
+        this.networkEndDeviceDataProvider = networkEndDeviceDataProvider;
         initCrud(dataProvider, Device.class);
     }
 
@@ -49,7 +52,7 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         deviceSelect.setLabel("End device");
         deviceSelect.setHelperText("Select a network server and then a device");
         deviceSelect.setItemLabelGenerator(endDevice -> String.format("(%s) %s - %s", endDevice.networkServer(), endDevice.name(), endDevice.id()));
-        deviceSelect.setItems(dataProvider.listEndDevices());
+        deviceSelect.setItems(networkEndDeviceDataProvider);
 
         var networkServerSelect = new Select<NetworkServer>();
         networkServerSelect.setLabel("Network server");
@@ -58,8 +61,8 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
         networkServerSelect.setEmptySelectionCaption("All");
         networkServerSelect.addValueChangeListener(event -> {
             var endDevices = Optional.ofNullable(event.getValue())
-                    .map(dataProvider::listEndDevices)
-                    .orElseGet(dataProvider::listEndDevices);
+                    .map(networkEndDeviceDataProvider::listEndDevices)
+                    .orElseGet(networkEndDeviceDataProvider::listEndDevices);
             deviceSelect.setItems(endDevices);
         });
 

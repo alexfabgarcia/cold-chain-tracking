@@ -22,8 +22,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -83,13 +84,13 @@ public class MainLayout extends AppLayout {
     }
 
     private Map<Class<?>, SideNavItem> sideNavItems() {
-        return Map.of(
-                FreightListView.class, new SideNavItem("Freights", FreightListView.class, LineAwesomeIcon.ROUTE_SOLID.create()),
-                MeasurementTypeListView.class, new SideNavItem("Measurement Types", MeasurementTypeListView.class, LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create()),
-                DeviceListView.class, new SideNavItem("Devices", DeviceListView.class, LineAwesomeIcon.MICROCHIP_SOLID.create()),
-                ProductListView.class, new SideNavItem("Products", ProductListView.class, LineAwesomeIcon.BOX_SOLID.create()),
-                CarrierListView.class, new SideNavItem("Carriers", CarrierListView.class, LineAwesomeIcon.HARD_HAT_SOLID.create())
-        );
+        var map = new LinkedHashMap<Class<?>, SideNavItem>();
+        map.put(FreightListView.class, new SideNavItem("Freights", FreightListView.class, LineAwesomeIcon.ROUTE_SOLID.create()));
+        map.put(MeasurementTypeListView.class, new SideNavItem("Measurement Types", MeasurementTypeListView.class, LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create()));
+        map.put(DeviceListView.class, new SideNavItem("Devices", DeviceListView.class, LineAwesomeIcon.MICROCHIP_SOLID.create()));
+        map.put(ProductListView.class, new SideNavItem("Products", ProductListView.class, LineAwesomeIcon.BOX_SOLID.create()));
+        map.put(CarrierListView.class, new SideNavItem("Carriers", CarrierListView.class, LineAwesomeIcon.HARD_HAT_SOLID.create()));
+        return map;
     }
 
     private Footer createFooter() {

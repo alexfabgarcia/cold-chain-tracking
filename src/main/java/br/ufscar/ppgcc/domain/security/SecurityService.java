@@ -2,8 +2,11 @@ package br.ufscar.ppgcc.domain.security;
 
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.spring.security.AuthenticationContext;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
 
 @Component
 public class SecurityService {
@@ -27,6 +30,14 @@ public class SecurityService {
 
     public boolean hasAccessTo(Class<?> view) {
         return accessAnnotationChecker.hasAccess(view);
+    }
+
+    public boolean isCarrier() {
+        return authenticationContext.getAuthenticatedUser(UserDetails.class)
+                .map(UserDetails::getAuthorities).orElse(Collections.emptySet())
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(it -> it.equals("ROLE_CARRIER"));
     }
 
 }

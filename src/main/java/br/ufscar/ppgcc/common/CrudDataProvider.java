@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class CrudDataProvider<T> extends AbstractBackEndDataProvider<T, CrudFilter> {
 
-    private final GridCrudRepository<T> repository;
+    private final transient GridCrudRepository<T> repository;
 
     public CrudDataProvider(GridCrudRepository<T> repository) {
         this.repository = repository;
@@ -26,7 +26,7 @@ public class CrudDataProvider<T> extends AbstractBackEndDataProvider<T, CrudFilt
         return repository.findAll(getPageable(query)).stream();
     }
 
-    private Pageable getPageable(Query<T, CrudFilter> query) {
+    protected Pageable getPageable(Query<T, CrudFilter> query) {
         return PageRequest.of(query.getPage(), query.getPageSize(), getSort(query));
     }
 

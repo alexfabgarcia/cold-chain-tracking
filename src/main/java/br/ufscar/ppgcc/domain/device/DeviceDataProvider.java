@@ -9,25 +9,15 @@ import java.util.List;
 @Component
 class DeviceDataProvider extends CrudDataProvider<Device> {
 
-    private final DeviceRepository repository;
-    private final NetworkEndDeviceService networkEndDeviceService;
+    private final transient DeviceRepository repository;
 
-    public DeviceDataProvider(DeviceRepository repository, NetworkEndDeviceService networkEndDeviceService) {
+    public DeviceDataProvider(DeviceRepository repository) {
         super(repository);
         this.repository = repository;
-        this.networkEndDeviceService = networkEndDeviceService;
     }
 
     public List<NetworkServer> networkServers() {
         return List.of(NetworkServer.values());
-    }
-
-    public List<NetworkEndDevice> listEndDevices(NetworkServer networkServer) {
-        return networkEndDeviceService.listDevices(networkServer);
-    }
-
-    public List<NetworkEndDevice> listEndDevices() {
-        return networkEndDeviceService.listDevices();
     }
 
     public List<Device> search(String searchText) {

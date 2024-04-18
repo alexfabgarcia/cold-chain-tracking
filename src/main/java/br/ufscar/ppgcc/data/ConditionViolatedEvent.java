@@ -8,11 +8,11 @@ import java.util.List;
 
 public class ConditionViolatedEvent extends ApplicationEvent {
 
-    private final Device device;
+    private final Freight freight;
 
-    public ConditionViolatedEvent(List<String> conditions, Device device) {
+    public ConditionViolatedEvent(List<String> conditions, Freight freight) {
         super(conditions);
-        this.device = device;
+        this.freight = freight;
     }
 
     private List<String> getConditions() {
@@ -29,7 +29,7 @@ public class ConditionViolatedEvent extends ApplicationEvent {
     }
 
     public Device getDevice() {
-        return device;
+        return freight.getDevice();
     }
 
 }

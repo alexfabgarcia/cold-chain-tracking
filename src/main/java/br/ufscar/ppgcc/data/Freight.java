@@ -6,8 +6,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 
 import java.time.ZonedDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
 
 @Entity
 @Table(name = "freight")
@@ -15,8 +19,11 @@ import java.util.UUID;
         @NamedAttributeNode("product"), @NamedAttributeNode("device"), @NamedAttributeNode("carrier")
 })
 @NamedEntityGraph(
-        name = "Freight.productMeasurements",
-        attributeNodes = @NamedAttributeNode(value = "product", subgraph = "Product.measurements"),
+        name = "Freight.productMeasurementsAndDetails",
+        attributeNodes = {
+                @NamedAttributeNode(value = "product", subgraph = "Product.measurements"),
+                @NamedAttributeNode("device"), @NamedAttributeNode("carrier")
+        },
         subgraphs = @NamedSubgraph(
                 name = "Product.measurements",
                 attributeNodes = @NamedAttributeNode(value = "measurementTypes")
@@ -25,7 +32,7 @@ import java.util.UUID;
 public class Freight {
 
     public enum Status {
-        CREATED, STARTED, FINISHED, CANCELLED
+        CREATED, STARTED, FINISHED
     }
 
     @Id
@@ -40,6 +47,10 @@ public class Freight {
     @JoinColumn(name="device_id", nullable = false)
     private Device device;
 
+    @ManyToOne
+    @JoinColumn(name="carrier_id")
+    private Carrier carrier;
+
     @Type(JsonType.class)
     private GeolocationPoint origin;
 
@@ -48,12 +59,13 @@ public class Freight {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.CREATED;
+    private Boolean violated = Boolean.FALSE;
 
-    @ManyToOne
-    @JoinColumn(name="carrier_id")
-    private Carrier carrier;
+    @Column(name = "started_at", nullable = true, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime startedAt;
+
+    @Column(name = "finished_at", nullable = true, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime finishedAt;
 
     @Version
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
@@ -115,8 +127,38 @@ public class Freight {
         this.carrier = carrier;
     }
 
+    public Optional<ZonedDateTime> getStartedAt() {
+        return Optional.ofNullable(startedAt);
+    }
+
+    public Optional<ZonedDateTime> getFinishedAt() {
+        return Optional.ofNullable(finishedAt);
+    }
+
+    public void start() {
+        this.startedAt = ZonedDateTime.now();
+    }
+
+    public void setViolated() {
+        violated = Boolean.TRUE;
+    }
+
+    public boolean isCreated() {
+        return isNull(startedAt);
+    }
+
+    public boolean isStarted() {
+        return isNull(finishedAt) && nonNull(startedAt);
+    }
+
     public Status getStatus() {
-        return status;
+        if (isCreated()) {
+            return Status.CREATED;
+        }
+        if (isStarted()) {
+            return Status.STARTED;
+        }
+        return Status.FINISHED;
     }
 
     public String getOriginAddress() {
@@ -136,7 +178,25 @@ public class Freight {
     }
 
     public String getCarrierName() {
-        return Optional.ofNullable(carrier).map(Carrier::getFirstName).orElse(null);
+        return Optional.ofNullable(carrier).map(Carrier::getFullName).orElse(null);
     }
 
+    public List<String> getViolatedConditions(Map<String, Double> measurements) {
+        var productMeasurements = getProductMeasurements();
+        return measurements.entrySet().stream()
+                .filter(entry -> {
+                    var productMeasurement = productMeasurements.get(entry.getKey());
+                    return productMeasurement != null && (entry.getValue() < productMeasurement.getMinimum() ||
+                                    entry.getValue() > productMeasurement.getMaximum());
+                })
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    private Map<String, ProductMeasurementType> getProductMeasurements() {
+        return Optional.ofNullable(product)
+                .map(Product::getMeasurementTypes).orElse(Collections.emptySet())
+                .stream()
+                .collect(toMap(item -> item.getMeasurementType().getName(), Function.identity()));
+    }
 }

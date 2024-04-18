@@ -21,6 +21,9 @@ public class Carrier {
 
     private String phone;
 
+    @Column(name = "user_id")
+    private String userId;
+
     @Version
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime updatedAt;
@@ -53,4 +56,7 @@ public class Carrier {
         this.phone = phone;
     }
 
+    public String getFullName() {
+        return String.format("%s %s", firstName, surname);
+    }
 }

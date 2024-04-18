@@ -5,6 +5,20 @@ CREATE TABLE raw_event
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE users
+(
+    username VARCHAR PRIMARY KEY NOT NULL,
+    password VARCHAR             NOT NULL,
+    enabled  BOOLEAN             NOT NULL DEFAULT true
+);
+
+CREATE TABLE authorities
+(
+    username  VARCHAR NOT NULL REFERENCES users,
+    authority VARCHAR NOT NULL,
+    UNIQUE (username, authority)
+);
+
 CREATE TABLE measurement_type
 (
     id         UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
@@ -71,6 +85,7 @@ CREATE TABLE carrier
     first_name VARCHAR     NOT NULL,
     surname    VARCHAR     NOT NULL,
     phone      VARCHAR     NOT NULL,
+    user_id    VARCHAR REFERENCES users,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (phone)
@@ -81,11 +96,13 @@ CREATE TABLE freight
     id          UUID PRIMARY KEY     DEFAULT uuid_generate_v1(),
     device_id   UUID        NOT NULL REFERENCES device,
     product_id  UUID        NOT NULL REFERENCES product,
-    description VARCHAR,
+    carrier_id  UUID        NOT NULL REFERENCES carrier,
     origin      JSONB       NOT NULL,
     destination JSONB       NOT NULL,
-    status      VARCHAR     NOT NULL,
-    carrier_id  UUID REFERENCES carrier,
+    violated    BOOLEAN     NOT NULL DEFAULT false,
+    description VARCHAR,
+    started_at  TIMESTAMPTZ,
+    finished_at TIMESTAMPTZ,
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (device_id, product_id, created_at)
