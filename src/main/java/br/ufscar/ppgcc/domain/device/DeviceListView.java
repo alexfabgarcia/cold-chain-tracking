@@ -15,6 +15,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
+@RolesAllowed("ADMIN")
 @PageTitle("Devices")
 @Route(value = "devices", layout = MainLayout.class)
 public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {

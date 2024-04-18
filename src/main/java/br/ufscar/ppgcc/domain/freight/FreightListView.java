@@ -14,10 +14,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouteParam;
+import jakarta.annotation.security.RolesAllowed;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.util.List;
 
+@RolesAllowed({"ROLE_ADMIN", "ROLE_CARRIER"})
 @PageTitle("Freights")
 @Route(value = "freights", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)

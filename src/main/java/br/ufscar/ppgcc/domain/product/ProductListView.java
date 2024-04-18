@@ -16,6 +16,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 import java.util.function.Function;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
+@RolesAllowed("ADMIN")
 @PageTitle("Products")
 @Route(value = "products", layout = MainLayout.class)
 public class ProductListView extends CrudListView<Product, ProductDataProvider> {

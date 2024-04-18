@@ -14,6 +14,8 @@ import com.vaadin.flow.component.map.Map;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.router.*;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,8 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
+@RolesAllowed({"ADMIN", "CARRIER"})
+@PermitAll
 @PageTitle("Freights Measurements")
 @Route(value = "freights/:id/measurements", layout = MainLayout.class)
 public class FreightMeasurementView extends VerticalLayout implements BeforeEnterObserver {

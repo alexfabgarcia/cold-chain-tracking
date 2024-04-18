@@ -10,9 +10,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 
+@RolesAllowed("ADMIN")
 @PageTitle("Carriers")
 @Route(value = "carriers", layout = MainLayout.class)
 public class CarrierListView extends CrudListView<Carrier, CarrierDataProvider> {

@@ -12,9 +12,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 
+@RolesAllowed("ADMIN")
 @PageTitle("Measurement Types")
 @Route(value = "measurement-types", layout = MainLayout.class)
 public class MeasurementTypeListView extends CrudListView<MeasurementType, MeasurementDataProvider> {
