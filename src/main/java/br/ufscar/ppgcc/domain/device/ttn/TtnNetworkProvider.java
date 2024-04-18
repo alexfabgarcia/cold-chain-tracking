@@ -26,13 +26,18 @@ class TtnNetworkProvider implements NetworkProviderService<TtnGetDevicesResponse
 
     @Override
     public List<TtnGetDevicesResponse.EndDevice> listDevices() {
-        var response = ttnClient.listDevices(String.format("Bearer %s", ttnToken));
+        var response = ttnClient.listDevices(bearerToken());
         return response.endDevices();
+    }
+
+    private String bearerToken() {
+        return String.format("Bearer %s", ttnToken);
     }
 
     @Override
     public void notifyViolation(ConditionViolatedEvent event) {
-        // TODO ttn downlink
+        var downlinkMessage = TtnDownlinkMessage.from(event.getConditionsHexBase64Encoded());
+        ttnClient.sendInstruction(bearerToken(), event.getDevice().getExternalId(), downlinkMessage);
     }
 
 }
