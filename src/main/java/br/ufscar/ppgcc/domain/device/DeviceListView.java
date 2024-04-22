@@ -1,28 +1,23 @@
 package br.ufscar.ppgcc.domain.device;
 
 import br.ufscar.ppgcc.common.CrudListView;
+import br.ufscar.ppgcc.common.views.MainLayout;
 import br.ufscar.ppgcc.data.Device;
-import br.ufscar.ppgcc.data.MeasurementType;
 import br.ufscar.ppgcc.domain.device.kpn.KpnGetDevicesResponse;
 import br.ufscar.ppgcc.domain.device.ttn.TtnGetDevicesResponse;
-import br.ufscar.ppgcc.common.views.MainLayout;
-import br.ufscar.ppgcc.domain.measurement.MeasurementTypeMultiSelect;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -30,20 +25,19 @@ import static java.util.stream.Collectors.toMap;
 @PageTitle("Devices")
 @Route(value = "devices", layout = MainLayout.class)
 public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
-
-    private final MeasurementTypeMultiSelect measurementMultiSelect;
     private final NetworkEndDeviceDataProvider networkEndDeviceDataProvider;
+    private final transient Map<String, DevicePayloadDecoder> decoders;
 
-    public DeviceListView(DeviceDataProvider dataProvider, MeasurementTypeMultiSelect measurementMultiSelect,
-                          NetworkEndDeviceDataProvider networkEndDeviceDataProvider) {
-        this.measurementMultiSelect = measurementMultiSelect;
+    public DeviceListView(DeviceDataProvider dataProvider, NetworkEndDeviceDataProvider networkEndDeviceDataProvider,
+                          List<DevicePayloadDecoder> decoders) {
         this.networkEndDeviceDataProvider = networkEndDeviceDataProvider;
+        this.decoders = decoders.stream().collect(toMap(DevicePayloadDecoder::id, Function.identity()));
         initCrud(dataProvider, Device.class);
     }
 
     @Override
     protected List<String> visibleColumns() {
-        return List.of("externalId", "name", "networkServer", "payloadPattern");
+        return List.of("externalId", "name", "networkServer", "payloadDecoder");
     }
 
     @Override
@@ -66,36 +60,22 @@ public class DeviceListView extends CrudListView<Device, DeviceDataProvider> {
             deviceSelect.setItems(endDevices);
         });
 
-        var payloadPattern = new TextField("Payload format");
-        payloadPattern.setHelperText("Select the measurement and edit the expected payload");
-
-        measurementMultiSelect.addValueChangeListener(event -> {
-            var format = event.getValue().stream()
-                    .map(measurementType -> String.format("{%s}", measurementType.getName()))
-                    .collect(Collectors.joining("/"));
-            payloadPattern.setValue(format);
-        });
+        var payloadDecoder = new Select<DevicePayloadDecoder>();
+        payloadDecoder.setLabel("Payload Decoder");
+        payloadDecoder.setItems(decoders.values());
+        payloadDecoder.setItemLabelGenerator(DevicePayloadDecoder::name);
 
         var binder = new Binder<>(Device.class);
         binder.forField(networkServerSelect).bind(Device::getNetworkServer, Device::setNetworkServer);
         binder.forField(deviceSelect).asRequired().bind(this::toNetworkEndDevice, Device::setFrom);
-        binder.forField(measurementMultiSelect).bind(device -> Optional.ofNullable(device.getPayloadPattern()).map(text -> {
-            var types = measurementMultiSelect.getListDataView()
-                    .getItems().collect(toMap(MeasurementType::getName, Function.identity()));
-            Pattern pattern = Pattern.compile("\\{([^}]*)\\}");
-            Matcher matcher = pattern.matcher(text);
-            return matcher.results().map(result -> result.group(1))
-                    .map(types::get)
-                    .collect(Collectors.toSet());
-        }).orElse(null), (foo,bar) -> {});
-        binder.forField(payloadPattern).asRequired().bind(Device::getPayloadPattern, Device::setPayloadPattern);
+        binder.forField(payloadDecoder).asRequired().bind(device -> decoders.get(device.getPayloadDecoder()),
+                (device, value) -> device.setPayloadDecoder(value.id()));
 
-        var form = new FormLayout(networkServerSelect, deviceSelect, measurementMultiSelect, payloadPattern);
+        var form = new FormLayout(networkServerSelect, deviceSelect, payloadDecoder);
 
         return new BinderCrudEditor<>(binder, form);
     }
 
-    // FIXME Temporary for select binding
     private NetworkEndDevice toNetworkEndDevice(Device device) {
         if (device != null) {
             if (device.getNetworkServer() == NetworkServer.TTN) {

@@ -10,17 +10,17 @@ public class ConditionViolatedEvent extends ApplicationEvent {
 
     private final Freight freight;
 
-    public ConditionViolatedEvent(List<String> conditions, Freight freight) {
+    public ConditionViolatedEvent(List<FreightViolation> conditions, Freight freight) {
         super(conditions);
         this.freight = freight;
     }
 
-    private List<String> getConditions() {
-        return (List<String>) getSource();
+    private List<FreightViolation> getConditions() {
+        return (List<FreightViolation>) getSource();
     }
 
     public String getConditionsHex() {
-        var conditions = String.join(",", getConditions());
+        var conditions = String.join(",", getConditions().stream().map(FreightViolation::name).toList());
         return Hex.encodeHexString(conditions.getBytes());
     }
 

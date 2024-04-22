@@ -2,6 +2,7 @@ package br.ufscar.ppgcc.domain.freight;
 
 import br.ufscar.ppgcc.data.Device;
 import br.ufscar.ppgcc.data.Freight;
+import br.ufscar.ppgcc.data.FreightViolation;
 import br.ufscar.ppgcc.domain.carrier.CarrierRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +30,17 @@ class FreightService {
         freightRepository.save(freight);
     }
 
+    public void finish(Freight freight) {
+        freight.finish();
+        freightRepository.save(freight);
+    }
+
     public Optional<Freight> findStarted(Device device) {
         return freightRepository.findFirstByDeviceAndStartedAtIsNotNullAndFinishedAtIsNullOrderByCreatedAtDesc(device);
     }
 
-    public void violated(Freight freight, List<String> violatedConditions) {
-        violatedConditions.forEach(condition -> LOGGER.warn("{} violated for freight {}.", condition, freight.getId()));
+    public void violated(Freight freight, List<FreightViolation> violatedConditions) {
+        violatedConditions.forEach(condition -> LOGGER.warn("{} violated for freight {}.", condition.name(), freight.getId()));
         freight.setViolated();
         freightRepository.save(freight);
     }

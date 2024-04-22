@@ -39,23 +39,35 @@ public class FreightListView extends CrudListView<Freight, FreightDataProvider> 
 
     private final Button startButton = new Button("Start");
 
+    private final Button finishButton = new Button("Finish");
+
     protected FreightListView(FreightDataProvider dataProvider, FreightFormLayout formLayout, SecurityService securityService, FreightService freightService) {
         this.formLayout = formLayout;
         this.securityService = securityService;
         this.freightService = freightService;
         initCrud(dataProvider, Freight.class);
-        setupStartButton();
+        setupCarrierButtons();
     }
 
-    private void setupStartButton() {
+    private void setupCarrierButtons() {
         startButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        startButton.setEnabled(false);
+        startButton.setVisible(false);
         startButton.addClickListener(event -> crud.getGrid().getSelectedItems().stream().findAny().ifPresent(this::start));
+        finishButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        finishButton.setVisible(false);
+        finishButton.addClickListener(event -> crud.getGrid().getSelectedItems().stream().findAny().ifPresent(this::finish));
     }
 
     private void start(Freight freight) {
         freightService.start(freight, securityService.getAuthenticatedUser().getUsername());
         crud.getDataProvider().refreshAll();
+        startButton.setVisible(false);
+    }
+
+    private void finish(Freight freight) {
+        freightService.finish(freight);
+        crud.getDataProvider().refreshAll();
+        finishButton.setVisible(false);
     }
 
     @Override
@@ -95,13 +107,16 @@ public class FreightListView extends CrudListView<Freight, FreightDataProvider> 
     protected void setupGrid() {
         super.setupGrid();
         var grid = crud.getGrid();
-        new FreightContextMenu(grid, this::start);
+        grid.addClassName("freight-grid");
+        new FreightContextMenu(grid, this::start, this::finish);
 
         grid.addColumn(new ComponentRenderer<>(Button::new, (button, freight) -> {
             button.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY);
             button.addClickListener(e -> button.getUI().ifPresent(ui -> measurementLink(ui, freight)));
             button.setIcon(LineAwesomeIcon.TEMPERATURE_HIGH_SOLID.create());
         })).setKey("measurements");
+
+        grid.setPartNameGenerator(freight -> freight.isViolated() ? "violated" : null);
 
         if (securityService.isCarrier()) {
             configureCarrierView();
@@ -114,29 +129,32 @@ public class FreightListView extends CrudListView<Freight, FreightDataProvider> 
 
     private void configureCarrierView() {
         formLayout.setReadOnly(true);
-        formLayout.add(startButton);
 
-        crud.setToolbar(startButton);
+        crud.setToolbar(startButton, finishButton);
         crud.getNewButton().setVisible(false);
         crud.getDeleteButton().setEnabled(false);
 
         crud.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
         crud.getGrid().addSelectionListener(event -> event.getFirstSelectedItem()
-                .ifPresent(freight -> startButton.setEnabled(freight.isCreated() && securityService.isCarrier())));
+                .ifPresent(freight -> startButton.setVisible(freight.isCreated() && securityService.isCarrier())));
+        crud.getGrid().addSelectionListener(event -> event.getFirstSelectedItem()
+                .ifPresent(freight -> finishButton.setVisible(freight.isStarted() && securityService.isCarrier())));
     }
 
     private class FreightContextMenu extends GridContextMenu<Freight> {
-        FreightContextMenu(Grid<Freight> target, Consumer<Freight> startConsumer) {
+        FreightContextMenu(Grid<Freight> target, Consumer<Freight> startConsumer, Consumer<Freight> finishConsumer) {
             super(target);
             addItem("Edit", e -> e.getItem().ifPresent(freight -> crud.edit(freight, Crud.EditMode.EXISTING_ITEM)));
             addItem("Measurements", e -> e.getItem().ifPresent(freight -> getUI().ifPresent(ui -> measurementLink(ui, freight))));
             var startLink = addItem("Start", e -> e.getItem().ifPresent(startConsumer));
+            var finishLink = addItem("Finish", e -> e.getItem().ifPresent(finishConsumer));
 
             setDynamicContentHandler(freight -> {
                 if (isNull(freight)) {
                     return false;
                 }
                 startLink.setVisible(freight.isCreated());
+                finishLink.setVisible(freight.isStarted());
                 return true;
             });
         }

@@ -32,8 +32,8 @@ public record KpnSenML(String bn, Number bt, String bu, Number bv, Number bver, 
                        Boolean vb, String vd, Number s, Number t, Number ut) {
 
     @JsonIgnore
-    public String getStringFromHexValue() {
-        return new String(HexFormat.of().parseHex(vs()));
+    public String getStringValue() {
+        return vs();
     }
 
     @JsonIgnore

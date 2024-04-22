@@ -20,6 +20,7 @@ public class MarkerMap extends Map {
                 gmf.toggleText();
             }
         });
+        setMinHeight("400px");
     }
 
     public void attach(Feature markerFeature) {

@@ -36,6 +36,7 @@ public class FreightMeasurementView extends VerticalLayout implements BeforeEnte
         this.freightDataProvider = freightDataProvider;
         this.formLayout = formLayout;
         add(formLayout);
+        setSizeFull();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class FreightMeasurementView extends VerticalLayout implements BeforeEnte
                 .orElseThrow(NotFoundException::new);
 
         var map = locationsMap(freight);
+        map.setSizeFull();
         formLayout.setReadOnly(freight);
 
         var tabs = new TabSheet();
@@ -71,6 +73,7 @@ public class FreightMeasurementView extends VerticalLayout implements BeforeEnte
                                    ProductMeasurementType productMeasurementType) {
         var chart = new Chart(ChartType.SPLINE);
         chart.setTimeline(true);
+        chart.setSizeFull();
         var configuration = chart.getConfiguration();
         configuration.getNavigator().setEnabled(false);
         configuration.getScrollbar().setEnabled(false);

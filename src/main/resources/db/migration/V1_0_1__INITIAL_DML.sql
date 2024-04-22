@@ -15,7 +15,7 @@ VALUES ('Alex', 'Garcia', '+5511999999999', 'alexgarcia');
 
 INSERT INTO measurement_type (name, unit)
 VALUES ('Temperature', 'DEGREE_CELSIUS'),
-       ('Humidity', 'PERCENTAGE'),
+       ('Humidity', 'RELATIVE_HUMIDITY'),
        ('Location', 'LATITUDE_LONGITUDE');
 
 INSERT INTO product (name, category)

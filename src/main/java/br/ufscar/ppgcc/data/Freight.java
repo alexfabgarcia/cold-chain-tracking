@@ -135,8 +135,16 @@ public class Freight {
         return Optional.ofNullable(finishedAt);
     }
 
+    public Boolean isViolated() {
+        return violated;
+    }
+
     public void start() {
         this.startedAt = ZonedDateTime.now();
+    }
+
+    public void finish() {
+        this.finishedAt = ZonedDateTime.now();
     }
 
     public void setViolated() {
@@ -181,16 +189,24 @@ public class Freight {
         return Optional.ofNullable(carrier).map(Carrier::getFullName).orElse(null);
     }
 
-    public List<String> getViolatedConditions(Map<String, Double> measurements) {
+    public List<FreightViolation> getViolatedConditions(Map<String, Double> measurements) {
         var productMeasurements = getProductMeasurements();
         return measurements.entrySet().stream()
-                .filter(entry -> {
+                .map(entry -> {
                     var productMeasurement = productMeasurements.get(entry.getKey());
-                    return productMeasurement != null && (entry.getValue() < productMeasurement.getMinimum() ||
-                                    entry.getValue() > productMeasurement.getMaximum());
+                    if (isConditionViolated(entry.getValue(), productMeasurement)) {
+                        return new FreightViolation(entry.getKey(), entry.getValue(), productMeasurement.getMinimum(),
+                                productMeasurement.getMaximum());
+                    }
+                    return null;
                 })
-                .map(Map.Entry::getKey)
+                .filter(Objects::nonNull)
                 .toList();
+    }
+
+    private boolean isConditionViolated(Double measurement, ProductMeasurementType productMeasurement) {
+        return (productMeasurement != null && (measurement < productMeasurement.getMinimum() ||
+                measurement > productMeasurement.getMaximum()));
     }
 
     private Map<String, ProductMeasurementType> getProductMeasurements() {

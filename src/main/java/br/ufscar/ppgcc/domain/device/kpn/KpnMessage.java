@@ -37,7 +37,7 @@ public class KpnMessage {
 
     public Optional<KpnPayload> getPayload() {
         return findMeasurement("payload")
-                .map(senML -> new KpnPayload(senML.getStringFromHexValue(), senML.getBaseTime()));
+                .map(senML -> new KpnPayload(senML.getStringValue(), senML.getBaseTime()));
     }
 
     public Optional<KpnLocation> getLocation() {

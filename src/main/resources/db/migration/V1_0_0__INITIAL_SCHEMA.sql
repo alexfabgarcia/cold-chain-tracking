@@ -58,7 +58,7 @@ CREATE TABLE device
     network_server  VARCHAR     NOT NULL,
     eui             VARCHAR,
     name            VARCHAR,
-    payload_pattern VARCHAR,
+    payload_decoder VARCHAR,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (external_id, network_server)

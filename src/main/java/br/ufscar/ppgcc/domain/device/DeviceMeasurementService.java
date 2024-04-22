@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.util.PathMatcher;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.Objects.isNull;
@@ -29,38 +29,45 @@ public class DeviceMeasurementService {
     private final MeasurementTypeRepository measurementTypeRepository;
     private final DeviceRepository deviceRepository;
     private final ObjectMapper objectMapper;
-    private final PathMatcher pathMatcher;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final Map<String, DevicePayloadDecoder> decoders;
+    private final DevicePayloadDecoder defaultDecoder;
 
     public DeviceMeasurementService(DeviceMeasurementRepository deviceMeasurementRepository,
                                     MeasurementTypeRepository measurementTypeRepository,
-                                    DeviceRepository deviceRepository, ObjectMapper objectMapper, PathMatcher pathMatcher, ApplicationEventPublisher applicationEventPublisher) {
+                                    DeviceRepository deviceRepository, ObjectMapper objectMapper,
+                                    ApplicationEventPublisher applicationEventPublisher,
+                                    List<DevicePayloadDecoder> decoders, DevicePayloadDecoder defaultDecoder) {
         this.deviceMeasurementRepository = deviceMeasurementRepository;
         this.measurementTypeRepository = measurementTypeRepository;
         this.deviceRepository = deviceRepository;
         this.objectMapper = objectMapper;
-        this.pathMatcher = pathMatcher;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.decoders = decoders.stream().collect(toMap(DevicePayloadDecoder::id, Function.identity()));
+        this.defaultDecoder = defaultDecoder;
     }
 
     public void savePayload(String deviceExternalId, NetworkServer networkServer, String deviceEui, String payload,
                             ZonedDateTime moment) {
         var device = getDevice(deviceExternalId, networkServer, deviceEui);
+        var decoder = Optional.ofNullable(device.getPayloadDecoder()).map(decoders::get).orElse(defaultDecoder);
 
-        if (pathMatcher.match(device.getPayloadPattern(), payload)) {
-            var measurements = pathMatcher.extractUriTemplateVariables(device.getPayloadPattern(), payload);
-            var types = measurementTypeRepository.findByNameIn(measurements.keySet()).stream().collect(toMap(MeasurementType::getName, Function.identity()));
+        try {
+            var measurements = decoder.decode(payload);
+            var types = measurementTypeRepository.findByNameIn(measurements.keySet())
+                    .stream()
+                    .collect(toMap(MeasurementType::getName, Function.identity()));
             var deviceMeasurements = measurements.entrySet().stream()
-                    .map(entry -> new DeviceMeasurement(device, types.get(entry.getKey()), moment, entry.getValue()))
+                    .map(entry -> new DeviceMeasurement(device, types.get(entry.getKey()), moment, entry.getValue().toString()))
                     .toList();
 
             deviceMeasurementRepository.saveAll(deviceMeasurements);
             applicationEventPublisher.publishEvent(new DeviceMeasurementEvent(device, measurements));
-        } else {
+        } catch(Exception e) {
+            LOGGER.warn(String.format("Device decoder is not properly configured. External id: %s, Decoder: %s",
+                    device.getExternalId(), device.getPayloadDecoder()), e);
             var deviceMeasurement = new DeviceMeasurement(device, moment, payload);
             deviceMeasurementRepository.save(deviceMeasurement);
-            LOGGER.warn("Device pattern does not match received payload. External id: {}, Pattern: {}",
-                    device.getExternalId(), device.getPayloadPattern());
         }
     }
 

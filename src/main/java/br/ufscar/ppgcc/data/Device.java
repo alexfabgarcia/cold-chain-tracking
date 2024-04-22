@@ -31,8 +31,8 @@ public class Device {
 
     private String name;
 
-    @Column(name = "payload_pattern")
-    private String payloadPattern;
+    @Column(name = "payload_decoder")
+    private String payloadDecoder;
 
     @Version
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
@@ -74,12 +74,12 @@ public class Device {
         this.networkServer = networkServer;
     }
 
-    public String getPayloadPattern() {
-        return payloadPattern;
+    public String getPayloadDecoder() {
+        return payloadDecoder;
     }
 
-    public void setPayloadPattern(String payloadPattern) {
-        this.payloadPattern = payloadPattern;
+    public void setPayloadDecoder(String payloadPattern) {
+        this.payloadDecoder = payloadPattern;
     }
 
     public void setFrom(NetworkEndDevice networkEndDevice) {
