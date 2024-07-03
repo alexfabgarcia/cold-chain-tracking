@@ -3,6 +3,7 @@ package br.ufscar.ppgcc.domain.device.kpn;
 import br.ufscar.ppgcc.data.ConditionViolatedEvent;
 import br.ufscar.ppgcc.domain.device.NetworkProviderService;
 import br.ufscar.ppgcc.domain.device.NetworkServer;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +37,8 @@ class KpnNetworkProvider implements NetworkProviderService<KpnGetDevicesResponse
         return String.format("Bearer %s", tokenResponse.token());
     }
 
+    @Observed(name = "condition.violated", contextualName = "condition-violated",
+            lowCardinalityKeyValues = {"networkServer", "kpn"})
     @Override
     public void notifyViolation(ConditionViolatedEvent event) {
         var payloadHex = KpnSenML.payloadFrom(event.getDevice().getEui(), event.getConditionsHex());

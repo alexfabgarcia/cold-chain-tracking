@@ -3,6 +3,7 @@ package br.ufscar.ppgcc.domain.device.ttn;
 import br.ufscar.ppgcc.data.ConditionViolatedEvent;
 import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.device.NetworkProviderService;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,8 @@ class TtnNetworkProvider implements NetworkProviderService<TtnGetDevicesResponse
     }
 
     @Override
+    @Observed(name = "condition.violated", contextualName = "condition-violated",
+            lowCardinalityKeyValues = {"networkServer", "ttn"})
     public void notifyViolation(ConditionViolatedEvent event) {
         var downlinkMessage = TtnDownlinkMessage.from(event.getConditionsHexBase64Encoded());
         ttnClient.sendInstruction(bearerToken(), event.getDevice().getExternalId(), downlinkMessage);

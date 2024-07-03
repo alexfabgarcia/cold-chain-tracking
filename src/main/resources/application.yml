@@ -54,3 +54,11 @@ ttn:
 google:
   geolocation:
     api-key:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  security:
+    enabled: false

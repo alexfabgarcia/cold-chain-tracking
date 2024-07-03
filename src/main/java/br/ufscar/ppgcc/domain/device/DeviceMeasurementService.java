@@ -4,6 +4,7 @@ import br.ufscar.ppgcc.data.*;
 import br.ufscar.ppgcc.domain.measurement.MeasurementTypeRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.observation.annotation.Observed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,6 +48,7 @@ public class DeviceMeasurementService {
         this.defaultDecoder = defaultDecoder;
     }
 
+    @Observed(name = "device.measurement", contextualName = "device-measurement")
     public void savePayload(String deviceExternalId, NetworkServer networkServer, String deviceEui, String payload,
                             ZonedDateTime moment) {
         var device = getDevice(deviceExternalId, networkServer, deviceEui);
@@ -83,6 +85,7 @@ public class DeviceMeasurementService {
                 .orElseGet(() -> deviceRepository.save(new Device(deviceExternalId, networkServer)));
     }
 
+    @Observed(name = "device.location", contextualName = "device-location")
     public void saveLocation(String deviceExternalId, NetworkServer networkServer, String deviceEui,
                              GeolocationPoint geolocationPoint, ZonedDateTime time) {
         var device = getDevice(deviceExternalId, networkServer, deviceEui);
