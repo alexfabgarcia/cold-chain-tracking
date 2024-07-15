@@ -3,6 +3,13 @@
 This project can be used as a starting point to create your own Vaadin application with Spring Boot.
 It contains all the necessary configuration and some placeholder files to get you started.
 
+## Arduino
+
+The Arduino source code for the end devices in versioned on the
+[arduino/cold_chain_tracking_end_device.ino](arduino/cold_chain_tracking_end_device.ino) file.
+
+Follow the file header instructions and change the `FILLMEIN` references with the device's OTAA values.
+
 ## Configuration
 
 Environment variables required to connect to the Network Servers KPN and TTN are:
