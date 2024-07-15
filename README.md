@@ -1,7 +1,10 @@
 # Cold Chain Tracking
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+This is the Cold Chain Tracking application, a Java Spring Boot 3 microservice with web views using Vaadin framework.
+
+It connects to MQTT brokers to process end device measurements coming from KPN and TTN (The Things Network).
+
+![Cold Chain Tracking freight sequence diagram.](docs/cold-chain-sequence-diagram.png "Cold Chain Tracking freight sequence diagram")
 
 ## Arduino
 
