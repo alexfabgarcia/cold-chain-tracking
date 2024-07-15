@@ -34,6 +34,11 @@ http://localhost:8080 in your browser.
 You can also import the project to your IDE of choice as you would with any
 Maven project. Read more on [how to import Vaadin projects to different IDEs](https://vaadin.com/docs/latest/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans, and VS Code).
 
+### User Log in
+
+The `admin` and `carrier` user credentials are created using the
+[migration file](src/main/resources/db/migration/V1_0_1__INITIAL_DML.sql). Use them to log in into the application.
+
 ## Deploying to Production
 
 To create a production build, call `mvnw clean package -Pproduction` (Windows),
