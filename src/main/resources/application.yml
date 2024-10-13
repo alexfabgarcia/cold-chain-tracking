@@ -8,7 +8,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DATABASE_NAME:coldchaintracking}
+    url: jdbc:postgresql://cold-chain-tracking-db:5432/${DATABASE_NAME:coldchaintracking}
     username: ${DATABASE_USERNAME:coldchaintracking}
     password: ${DATABASE_PASSWORD:coldchaintracking}
   mustache:

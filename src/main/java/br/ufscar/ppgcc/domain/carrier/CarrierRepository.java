@@ -13,4 +13,6 @@ public interface CarrierRepository extends GridCrudRepository<Carrier> {
     List<Carrier> findTop10ByFirstNameContainingIgnoreCaseOrSurnameContainingIgnoreCase(String firstNameSearch,
                                                                                         String surnameSearch);
 
+    Optional<Carrier> findByFirstNameAndSurname(String firstName, String surname);
+
 }

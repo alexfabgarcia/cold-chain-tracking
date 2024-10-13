@@ -5,6 +5,7 @@ import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.event.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.observation.annotation.Observed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -35,6 +36,7 @@ public class TtnMessageHandler implements MessageHandler {
 
     @Override
     @ServiceActivator(inputChannel = "ttnMqttInputChannel")
+    @Observed(name = "device.payload", contextualName = "device-payload", lowCardinalityKeyValues = { "networkServer", "ttn"})
     public void handleMessage(Message<?> message) throws MessagingException {
         LOGGER.debug("Handling message: {}", message);
         eventService.saveRawContentAsJson(message);

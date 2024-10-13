@@ -15,10 +15,13 @@ public interface FreightRepository extends GridCrudRepository<Freight> {
     @EntityGraph("Freight.details")
     Slice<Freight> findAll(Pageable pageable);
 
-    @EntityGraph("Freight.details")
+    @EntityGraph("Freigory freightRepository;\nht.details")
     Slice<Freight> findByCarrierUserId(String userId, Pageable pageable);
 
     @EntityGraph("Freight.productMeasurementsAndDetails")
     Optional<Freight> findFirstByDeviceAndStartedAtIsNotNullAndFinishedAtIsNullOrderByCreatedAtDesc(Device device);
+
+    @EntityGraph("Freight.details")
+    Optional<Freight> findByDescription(String description);
 
 }

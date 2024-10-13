@@ -4,6 +4,8 @@ import br.ufscar.ppgcc.data.ConditionViolatedEvent;
 import br.ufscar.ppgcc.domain.device.NetworkServer;
 import br.ufscar.ppgcc.domain.device.NetworkProviderService;
 import io.micrometer.observation.annotation.Observed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Service
 class TtnNetworkProvider implements NetworkProviderService<TtnGetDevicesResponse.EndDevice> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TtnNetworkProvider.class);
 
     private final TtnClient ttnClient;
     private final String ttnToken;
@@ -40,7 +44,11 @@ class TtnNetworkProvider implements NetworkProviderService<TtnGetDevicesResponse
             lowCardinalityKeyValues = {"networkServer", "ttn"})
     public void notifyViolation(ConditionViolatedEvent event) {
         var downlinkMessage = TtnDownlinkMessage.from(event.getConditionsHexBase64Encoded());
-        ttnClient.sendInstruction(bearerToken(), event.getDevice().getExternalId(), downlinkMessage);
+        if (event.getDevice().getName().startsWith("LoadTest TTN")) {
+            LOGGER.info("Ignoring violation of load test device {}", event.getDevice().getName());
+        } else {
+            ttnClient.sendInstruction(bearerToken(), event.getDevice().getExternalId(), downlinkMessage);
+        }
     }
 
 }
